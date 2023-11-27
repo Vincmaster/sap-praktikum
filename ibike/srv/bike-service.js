@@ -1,5 +1,5 @@
 const cds = require('@sap/cds')
-const log = cds.log('messaging-example')
+const log = cds.log('ibike')
 
 class BikeService extends cds.ApplicationService {
 
