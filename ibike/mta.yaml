@@ -15,6 +15,8 @@ modules:
     path: gen/srv
     parameters:
       buildpack: nodejs_buildpack
+      disk-quota: 1024M
+      memory: 512M
     build-parameters:
       builder: npm
     provides:
@@ -30,6 +32,8 @@ modules:
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
+      disk-quota: 1024M
+      memory: 512M
     requires:
       - name: ibike-db
 

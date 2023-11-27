@@ -22,9 +22,7 @@
   "cds": {
     "requires": {
       "messaging": {
-        "[development]": {
-          "kind": "file-based-messaging"
-        }
+        "kind": "file-based-messaging"
       },
       "[production]": {
         "db": "hana",
