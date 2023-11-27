@@ -4,7 +4,7 @@ using {
     sap.common.CodeList
 } from '@sap/cds/common';
 
-namespace messaging.example.db;
+namespace ibike.db;
 
 entity Bikes : cuid, managed {
     name : String(128) not null  @mandatory  @title: '{i18n>name}';

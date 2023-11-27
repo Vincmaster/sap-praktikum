@@ -1,4 +1,4 @@
-using {messaging.example.db as db} from '../db/schema';
+using {ibike.db as db} from '../db/schema';
 
 service BikeService {
 
