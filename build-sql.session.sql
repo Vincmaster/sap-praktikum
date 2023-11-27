@@ -1,1 +1,0 @@
-SELECT * FROM com_example_Foo;
