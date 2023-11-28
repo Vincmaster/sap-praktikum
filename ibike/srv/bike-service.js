@@ -8,12 +8,12 @@ class BikeService extends cds.ApplicationService {
 
         const messaging = await cds.connect.to('messaging')
 
-        messaging.on('BikeService.bikeRented', async (event) => {
+        messaging.on('TUM/ibike/em/bikes/rented', async (event) => {
             log.info('on bikeRented data:', event.data, 'headers:', event.headers)
             const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeId })
         })
 
-        messaging.on('BikeService.bikeReturned', async (event) => {
+        messaging.on('TUM/ibike/em/bikes/returned', async (event) => {
             log.info('on bikeReturned data:', event.data, 'headers:', event.headers)
         })
 

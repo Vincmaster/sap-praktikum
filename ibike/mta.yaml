@@ -26,6 +26,7 @@ modules:
     requires:
       - name: ibike-auth
       - name: ibike-db
+      - name: ibike-messaging
 
   - name: ibike-db-deployer
     type: hdb
@@ -52,3 +53,9 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
+  - name: ibike-messaging
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: enterprise-messaging
+      service-plan: default
+      path: ./event-mesh.json

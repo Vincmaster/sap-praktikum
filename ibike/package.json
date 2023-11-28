@@ -7,9 +7,10 @@
   "private": true,
   "dependencies": {
     "@sap/cds": "^7",
-    "express": "^4",
     "@sap/cds-hana": "^2",
+    "@sap/xb-msg-amqp-v100": "^0.9.58",
     "@sap/xssec": "^3",
+    "express": "^4",
     "passport": "^0"
   },
   "devDependencies": {
@@ -26,7 +27,8 @@
       },
       "[production]": {
         "db": "hana",
-        "auth": "xsuaa"
+        "auth": "xsuaa",
+        "messaging": "enterprise-messaging-shared"
       }
     }
   }
