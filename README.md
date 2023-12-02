@@ -2,6 +2,8 @@
 
 Welcome to your new project.
 
+TDiese hzeile hat ndi geschrieben zum testen. 
+
 It contains these folders and files, following our recommended project layout:
 
 File or Folder | Purpose
