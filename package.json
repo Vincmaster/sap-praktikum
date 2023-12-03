@@ -21,6 +21,9 @@
     "start": "cds-serve"
   },
   "cds": {
+    "features": {
+      "fiori_preview": true
+    },
     "requires": {
       "messaging": {
         "kind": "file-based-messaging"
