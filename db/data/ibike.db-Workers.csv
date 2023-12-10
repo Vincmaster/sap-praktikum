@@ -1,0 +1,4 @@
+ID,createdAt,createdBy,modifiedAt,modifiedBy,name,email
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1,2023-12-07T08:00:00Z,John Doe,2023-12-07T10:30:00Z,Jane Smith,Worker One,workerone@ibike.com
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2,2023-12-07T09:15:00Z,Jane Smith,2023-12-07T11:45:00Z,John Doe,Worker Two,workertwo@ibike.com
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3,2023-12-07T10:45:00Z,Adam Johnson,2023-12-07T13:00:00Z,Emily Brown,Worker Three,workerthree@ibike.com

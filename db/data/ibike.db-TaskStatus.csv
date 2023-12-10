@@ -1,0 +1,4 @@
+code,name,descr
+OPEN,Open,Task has been created but not started
+IN_PROGRESS,In Progress,Task is currently in progress
+DONE,Done,Task has been successfully finished

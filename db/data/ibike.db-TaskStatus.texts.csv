@@ -1,0 +1,7 @@
+locale,code,name,descr
+en,OPEN,Open,Task has been created but not started
+en,IN_PROGRESS,In Progress,Task is currently in progress
+en,DONE,Done,Task has been successfully finished
+de,OPEN,Open,Task has been created but not started
+de,IN_PROGRESS,In Progress,Task is currently in progress
+de,DONE,Done,Task has been successfully finished
