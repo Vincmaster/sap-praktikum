@@ -8,7 +8,7 @@ class BikeService extends cds.ApplicationService {
 
     const messaging = await cds.connect.to("messaging");
 
-    messaging.on("BikeService.bikeRented", async (event) => {
+    messaging.on("TUM/ibike/em/bikes/rented", async (event) => {
       console.log(event);
       log.info("on bikeRented data:", event.data, "headers:", event.headers);
 
@@ -114,8 +114,8 @@ class BikeService extends cds.ApplicationService {
       }
     });
 
-    messaging.on("BikeService.bikeReturned", async (event) => {
-      console.log(event);
+    messaging.on('TUM/ibike/em/bikes/returned', async (event) => {
+      console.log('Received event:', event);
       log.info("on bikeReturned data:", event.data, "headers:", event.headers);
 
       const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeId });
@@ -154,7 +154,7 @@ class BikeService extends cds.ApplicationService {
     // 1) Worker sets status of task from “OPEN” to “IN_PROGRESS”
     // 2) D) Worker sets status of task from “IN_PROGRESS” to “CLOSED”
     // TODO Event noch erstellen in bike-service.cds und Attributnamen pruefen
-    messaging.on("BikeService.taskStatusChanged", async (event) => {
+    messaging.on("TUM/ibike/em/bikes/taskStatusChanged", async (event) => {
       // Get all task items (i.e. all bikes) that belong to this redistrubtion task
       const taskItems = await SELECT.from(TaskItems).where({ task: event.data.taskId });
 
