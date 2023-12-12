@@ -9,17 +9,24 @@ class BikeService extends cds.ApplicationService {
     const messaging = await cds.connect.to("messaging");
 
     messaging.on("TUM/ibike/em/bikes/rented", async (event) => {
-      console.log(event);
+      console.log("Event Raw:", event);
+
       log.info("on bikeRented data:", event.data, "headers:", event.headers);
 
-      const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeId });
+      if(event.data && event.data.bikeID) {
+        log.info("BikeID:", event.data.bikeID);
+      } else {
+        log.error("BikeID not found in event data");
+      }
+
+      const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeID });
 
       if (bike) {
         // Set status to "rented" and decrease bikesAvailable in this station by 1
-        await UPDATE(Bikes).set({ status: "rented" }).where({ ID: event.data.bikeId });
-        await UPDATE(Station).set("bikesAvailable = bikesAvailable - 1").where({ ID: event.data.stationId });
+        await UPDATE(Bikes).set({ status: "rented" }).where({ ID: event.data.bikeID });
+        await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: event.data.stationID });
 
-        const station = await SELECT.one.from(Station).where({ ID: event.data.stationId });
+        const station = await SELECT.one.from(Stations).where({ ID: event.data.stationID });
 
         if (station) {
           // --- Start of incentive logic (incentive to return bikes to this station)
