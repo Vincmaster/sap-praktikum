@@ -1,38 +1,53 @@
 {
-  "name": "ibike",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap/cds": "^7",
-    "@sap/cds-hana": "^2",
-    "@sap/xb-msg-amqp-v100": "^0.9.58",
-    "@sap/xssec": "^3",
-    "express": "^4",
-    "passport": "^0"
-  },
-  "devDependencies": {
-    "@cap-js/sqlite": "^1",
-    "@sap/cds-dk": "^7"
-  },
-  "scripts": {
-    "start": "cds-serve"
-  },
-  "cds": {
-    "features": {
-      "fiori_preview": true
+    "name": "ibike",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap/cds": "^7",
+        "@sap/cds-hana": "^2",
+        "@sap/xb-msg-amqp-v100": "^0.9.58",
+        "@sap/xssec": "^3",
+        "express": "^4",
+        "passport": "^0"
     },
-    "requires": {
-      "messaging": {
-        "kind": "file-based-messaging"
-      },
-      "[production]": {
-        "db": "hana",
-        "auth": "xsuaa",
-        "messaging": "enterprise-messaging-shared"
-      }
-    }
-  }
+    "devDependencies": {
+        "@cap-js/sqlite": "^1",
+        "@sap/cds-dk": "^7",
+        "@sap/eslint-plugin-ui5-jsdocs": "^2.0.5",
+        "@sap/ux-specification": "^1.120.1",
+        "@sapui5/ts-types": "^1.92.2",
+        "eslint": "^7.32.0",
+        "rimraf": "^3.0.2"
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "watch-tasklist": "cds watch --open tasklist/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy ibike --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+        "watch-taskslist": "cds watch --open taskslist/webapp/index.html?sap-ui-xx-viewCache=false"
+    },
+    "cds": {
+        "features": {
+            "fiori_preview": true
+        },
+        "requires": {
+            "messaging": {
+                "kind": "file-based-messaging"
+            },
+            "[production]": {
+                "db": "hana",
+                "auth": "xsuaa",
+                "messaging": "enterprise-messaging-shared"
+            },
+            "auth": "mocked"
+        }
+    },
+    "sapux": [
+        "app/tasklist",
+        "app/taskslist"
+    ]
 }

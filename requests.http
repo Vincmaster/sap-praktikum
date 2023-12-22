@@ -1,0 +1,7 @@
+@url= http://localhost:4004/
+
+@user=alice
+
+@password = alice
+
+GET {{url}}/
