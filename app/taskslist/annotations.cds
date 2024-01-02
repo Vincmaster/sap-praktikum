@@ -14,3 +14,71 @@ annotate service.RedistributionTasks with @(
         },
     ]
 );
+
+annotate service.TaskItems with @(
+    UI.LineItem : [
+        {
+            $Type : 'UI.DataField',
+            Label : 'From',
+            Value : departure_ID,
+        },
+        {
+            $Type : 'UI.DataField',
+            Label : 'To',
+            Value : target_ID,
+        },
+        {
+            $Type : 'UI.DataField',
+            Label : 'Bike',
+            Value : bike_ID,
+        },
+    ]
+);
+annotate service.RedistributionTasks with @(
+    UI.HeaderInfo : {
+        Title : {
+            $Type : 'UI.DataField',
+            Value : ID,
+        },
+        TypeName : 'Task',
+        TypeNamePlural : 'Tasks',
+        Description : {
+            $Type : 'UI.DataField',
+            Value : status_code,
+            
+        },
+    }
+);
+
+annotate service.RedistributionTasks with @(
+    UI.FieldGroup #Tasks : {
+        $Type : 'UI.FieldGroupType',
+            Data : [
+                {
+                    Value : createdBy,
+                    Label : 'created by'
+                },
+                {
+                    Value : createdAt,
+                    Label : 'Created at'
+                }
+            ]
+
+    }
+);
+
+
+
+annotate service.RedistributionTasks with @(
+    UI.Facets : [
+    {
+        $Type : 'UI.ReferenceFacet',
+        Target : '@UI.FieldGroup#Tasks',
+    },
+    {
+        $Type : 'UI.ReferenceFacet',
+        Target : 'taskItems/@UI.LineItem',
+    }
+
+]
+);
