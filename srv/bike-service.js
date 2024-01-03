@@ -99,7 +99,6 @@ class BikeService extends cds.ApplicationService {
               status: "Pending",
               assignedWorker: randomWorker.ID,
             });
-            bikeID;
 
             // Choose the bikes that should be transferred to target station
             const bikesForRedistribution = await SELECT.from(Bikes)
