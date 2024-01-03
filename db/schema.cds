@@ -12,6 +12,8 @@ entity Bikes : cuid, managed {
     price : Int32;
     status : String(20);
     currentStation: Association to Stations;
+    kilometers: Int32;
+    incentiveLevel: Association to Incentives;
 }
 
 entity Stations : cuid, managed {

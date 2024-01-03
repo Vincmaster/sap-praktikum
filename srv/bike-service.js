@@ -13,10 +13,10 @@ class BikeService extends cds.ApplicationService {
 
       log.info("on bikeRented data:", event.data, "headers:", event.headers);
 
-      if(event.data && event.data.bikeID) {
-        log.info("BikeID:", event.data.bikeID);
+      if (event.data && event.data.bikeID) {
+        log.info("bikeID:", event.data.bikeID);
       } else {
-        log.error("BikeID not found in event data");
+        log.error("bikeID not found in event data");
       }
 
       const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeID });
@@ -52,7 +52,7 @@ class BikeService extends cds.ApplicationService {
           // Determine how many bikes are available in this station
           const bikesCount = await SELECT.count(1)
             .from(Bikes)
-            .where({ currentStation: event.data.stationId, status: "available" });
+            .where({ currentStation: event.data.stationID, status: "available" });
 
           // Check if redistribution is triggered
           // TODO vlt noch globale Konstanten machen
@@ -67,7 +67,7 @@ class BikeService extends cds.ApplicationService {
             // Condition: After redistribution, at least 5 bikes or 20% of max Capcity should be left over
             // TODO: checken ob Syntax stimmt
             const candidateStations = await SELECT.from(Station)
-              .where("ID !=", event.data.stationId)
+              .where("ID !=", event.data.stationID)
               .and(
                 `bikesAvailable - ${bikesToRedistribute} > 5 OR bikesAvailable - ${bikesToRedistribute} > maxCapacity * 0.2`
               );
@@ -99,6 +99,7 @@ class BikeService extends cds.ApplicationService {
               status: "Pending",
               assignedWorker: randomWorker.ID,
             });
+            bikeID;
 
             // Choose the bikes that should be transferred to target station
             const bikesForRedistribution = await SELECT.from(Bikes)
@@ -121,22 +122,28 @@ class BikeService extends cds.ApplicationService {
       }
     });
 
-    messaging.on('TUM/ibike/em/bikes/returned', async (event) => {
-      console.log('Received event:', event);
+    messaging.on("TUM/ibike/em/bikes/returned", async (event) => {
+      console.log("Received event:", event);
       log.info("on bikeReturned data:", event.data, "headers:", event.headers);
 
-      const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeId });
+      const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeID });
 
       // Set status to "available", set new station for the bike, increment bikesAvailale in station table
       if (bike) {
-        await UPDATE(Bikes)
-          .set({ status: "available", currentStation: event.data.stationId })
-          .where({ ID: event.data.bikeId });
+        // Generate a random number between 1 and 50 for kilometers
+        const randomKilometers = Math.floor(Math.random() * 50) + 1;
 
-        await UPDATE(Station).set("bikesAvailable = bikesAvailable + 1").where({ ID: event.data.stationId });
+        // Increment the total kilometers with the random value
+        const newTotalKilometers = (bike.kilometers || 0) + randomKilometers;
+
+        await UPDATE(Bikes)
+          .set({ status: "available", currentStation: event.data.stationID, kilometers: newTotalKilometers })
+          .where({ ID: event.data.bikeID });
+
+        await UPDATE(Station).set("bikesAvailable = bikesAvailable + 1").where({ ID: event.data.stationID });
       }
 
-      const station = await SELECT.one.from(Station).where({ ID: event.data.stationId });
+      const station = await SELECT.one.from(Station).where({ ID: event.data.stationID });
       if (station) {
         // --- incentive logic (incentive to rent bikes from this station)
         const thresholdLow = Math.floor(0.6 * station.maxCapacity); // low incentive to rent bike when 60% of max capacity are available
@@ -154,6 +161,32 @@ class BikeService extends cds.ApplicationService {
 
         // Update the incentive level in database
         await UPDATE(Stations).set({ rentIncentiveLevel: rentIncentiveLevel }).where({ id: station.ID });
+
+        // Find all bikes in the station where the customer returned the bike
+        const bikesInStation = await SELECT.from(Bikes).where({ currentStation: event.data.stationID });
+
+        // Sort the bikes in descending order of kilometers
+        const sortedBikes = bikesInStation.slice().sort((a, b) => b.kilometers - a.kilometers);
+
+        // Calculate the number of bikes in each partition. We partiton the list of bikes into 4 parts (25% of bikes each)
+        const partitionSize = Math.floor(sortedBikes.length / 4);
+
+        // Set incentive levels based on relative kilometers. The 25% of bikes with the most kilomters get the incentive "none", the next 25% get "low" and so on.
+        for (let i = 0; i < sortedBikes.length; i++) {
+          let bikeIncentiveLevel = "none";
+          if (i < partitionSize) {
+            bikeIncentiveLevel = "none";
+          } else if (i < partitionSize * 2) {
+            bikeIncentiveLevel = "low";
+          } else if (i < partitionSize * 3) {
+            bikeIncentiveLevel = "medium";
+          } else {
+            bikeIncentiveLevel = "high";
+          }
+
+          // Update the incentive level for the bike
+          await UPDATE(Bikes).set({ incentiveLevel: bikeIncentiveLevel }).where({ ID: sortedBikes[i].ID });
+        }
       }
     });
 
