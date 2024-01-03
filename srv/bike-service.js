@@ -11,113 +11,120 @@ class BikeService extends cds.ApplicationService {
     messaging.on("TUM/ibike/em/bikes/rented", async (event) => {
       console.log("Event Raw:", event);
 
-      log.info("on bikeRented data:", event.data, "headers:", event.headers);
+      if (event.data?.bikeID) {
+        log.info("BikeID is:", event.data.bikeID);
+        let bike;
+        try {
+            bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeID });
+            console.log('xxx_bike:', bike);
+        } catch (error) {
+            console.error('Error querying for bike:', error);
+        }
 
-      if(event.data && event.data.bikeID) {
-        log.info("BikeID:", event.data.bikeID);
-      } else {
-        log.error("BikeID not found in event data");
-      }
-
-      const bike = await SELECT.one.from(Bikes).where({ ID: event.data.bikeID });
-
-      if (bike) {
-        // Set status to "rented" and decrease bikesAvailable in this station by 1
-        await UPDATE(Bikes).set({ status: "rented" }).where({ ID: event.data.bikeID });
-        await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: event.data.stationID });
-
-        const station = await SELECT.one.from(Stations).where({ ID: event.data.stationID });
-
-        if (station) {
-          // --- Start of incentive logic (incentive to return bikes to this station)
-          const thresholdLow = Math.floor(0.4 * station.maxCapacity); // low incentive to return bike when 40% of max capacity are available
-          const thresholdMedium = Math.floor(0.2 * station.maxCapacity);
-          const thresholdHigh = Math.floor(0.1 * station.maxCapacity); // high incentive to return bike when only 10% of max capacity are availabe
-
-          let returnIncentiveLevel = "none";
-          if (station.bikesAvailable <= thresholdHigh) {
-            returnIncentiveLevel = "high";
-          } else if (station.bikesAvailable <= thresholdMedium) {
-            returnIncentiveLevel = "medium";
-          } else if (station.bikesAvailable <= thresholdLow) {
-            returnIncentiveLevel = "low";
-          }
-
-          // Update the incentive level in the database
-          await UPDATE(Stations).set({ returnIncentiveLevel: returnIncentiveLevel }).where({ id: station.ID });
-          // --- End of incentive logic
-
-          // --- Start of redistribution logic
-          // TODO: prüfen ob die Syntax stimmt mit count (1) und 2 where Bedingungen
-          // Determine how many bikes are available in this station
-          const bikesCount = await SELECT.count(1)
-            .from(Bikes)
-            .where({ currentStation: event.data.stationId, status: "available" });
-
-          // Check if redistribution is triggered
-          // TODO vlt noch globale Konstanten machen
-          if (bikesCount <= 5 || bikesCount <= station.maxCapacity * 0.2) {
-            // Determine how many bikes should be redistributed to this station
-            // The station should have at least 6 bikes or 40% of its max Capacity after redistribution
-            // TODO vlt noch globale Konstanten machen
-            let bikesToRedistribute = Math.max(6, Math.ceil(station.maxCapacity * 0.4)) - bikesCount;
-            log.info(`Bikes to redistribute: ${bikesToRedistribute}`);
-
-            // Determine all station from which we can possibly transfer bikes to our target station
-            // Condition: After redistribution, at least 5 bikes or 20% of max Capcity should be left over
-            // TODO: checken ob Syntax stimmt
-            const candidateStations = await SELECT.from(Station)
-              .where("ID !=", event.data.stationId)
-              .and(
-                `bikesAvailable - ${bikesToRedistribute} > 5 OR bikesAvailable - ${bikesToRedistribute} > maxCapacity * 0.2`
-              );
-
-            // For every station, calculate the distance to our target station
-            const stationDistances = [];
-            for (const candidateStation of candidateStations) {
-              // TODO: define "pointLocation" attribute in schema.cds in station table
-              const distance = ST_DISTANCE(station.pointLocation, candidateStation.pointLocation);
-              stationDistances.push({ candidateStation, distance });
+        if (bike) {
+          console.log('bike in loop:', bike);
+          // Set status to "rented" and decrease bikesAvailable in this station by 1
+          await UPDATE(Bikes).set({ status: "rented" }).where({ ID: event.data.bikeID });
+          await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: event.data.stationID });
+  
+          const station = await SELECT.one.from(Stations).where({ ID: event.data.stationID });
+  
+          if (station) {
+            // --- Start of incentive logic (incentive to return bikes to this station)
+            const thresholdLow = Math.floor(0.4 * station.maxCapacity); // low incentive to return bike when 40% of max capacity are available
+            const thresholdMedium = Math.floor(0.2 * station.maxCapacity);
+            const thresholdHigh = Math.floor(0.1 * station.maxCapacity); // high incentive to return bike when only 10% of max capacity are availabe
+  
+            let returnIncentiveLevel = "none";
+            if (station.bikesAvailable <= thresholdHigh) {
+              returnIncentiveLevel = "high";
+            } else if (station.bikesAvailable <= thresholdMedium) {
+              returnIncentiveLevel = "medium";
+            } else if (station.bikesAvailable <= thresholdLow) {
+              returnIncentiveLevel = "low";
             }
-
-            // Sort stations (smallest distance first)
-            stationDistances.sort((a, b) => a.distance - b.distance);
-
-            const nearestStation = stationDistances[0].station;
-            log.info(`Nearest station for redistribution: ${nearestStation.ID}`);
-            log.info(`Distance to target station: ${stationDistances[0].distance}`);
-
-            // choose a worker randomly to assign him the redistribution task later on
-            // TODO checken ob syntax richtig ist
-            const workers = await SELECT.from(Workers);
-            const worker = workers[Math.floor(Math.random() * workers.length)];
-            log.info(`Assigned worker: ${worker.ID}`);
-
-            // Create Redistribution Task and write it to database
-            // TODO checken ob Syntax stimmt
-            const redistributionTask = await INSERT.into(RedistributionTasks).entries({
-              status: "Pending",
-              assignedWorker: randomWorker.ID,
-            });
-
-            // Choose the bikes that should be transferred to target station
-            const bikesForRedistribution = await SELECT.from(Bikes)
-              .where("currentStation =", nearestStation.ID)
-              .and("status =", "available")
-              .limit(bikesToRedistribute);
-
-            for (const bikeToRedistribute of bikesForRedistribution) {
-              // Create one task item for each bike
-              const taskItem = await INSERT.into(TaskItems).entries({
-                bike: bikeToRedistribute.ID,
-                departure: station.ID,
-                target: nearestStation.ID,
-                task: redistributionTask.ID,
+  
+            // Update the incentive level in the database
+            await UPDATE(Stations).set({ returnIncentiveLevel: returnIncentiveLevel }).where({ id: station.ID });
+            // --- End of incentive logic
+  
+            // --- Start of redistribution logic
+            // TODO: prüfen ob die Syntax stimmt mit count (1) und 2 where Bedingungen
+            // Determine how many bikes are available in this station
+            const bikesCount = await SELECT.count(1)
+              .from(Bikes)
+              .where({ currentStation: event.data.stationId, status: "available" });
+  
+            // Check if redistribution is triggered
+            // TODO vlt noch globale Konstanten machen
+            if (bikesCount <= 5 || bikesCount <= station.maxCapacity * 0.2) {
+              // Determine how many bikes should be redistributed to this station
+              // The station should have at least 6 bikes or 40% of its max Capacity after redistribution
+              // TODO vlt noch globale Konstanten machen
+              let bikesToRedistribute = Math.max(6, Math.ceil(station.maxCapacity * 0.4)) - bikesCount;
+              log.info(`Bikes to redistribute: ${bikesToRedistribute}`);
+  
+              // Determine all station from which we can possibly transfer bikes to our target station
+              // Condition: After redistribution, at least 5 bikes or 20% of max Capcity should be left over
+              // TODO: checken ob Syntax stimmt
+              const candidateStations = await SELECT.from(Station)
+                .where("ID !=", event.data.stationId)
+                .and(
+                  `bikesAvailable - ${bikesToRedistribute} > 5 OR bikesAvailable - ${bikesToRedistribute} > maxCapacity * 0.2`
+                );
+  
+              // For every station, calculate the distance to our target station
+              const stationDistances = [];
+              for (const candidateStation of candidateStations) {
+                // TODO: define "pointLocation" attribute in schema.cds in station table
+                const distance = ST_DISTANCE(station.pointLocation, candidateStation.pointLocation);
+                stationDistances.push({ candidateStation, distance });
+              }
+  
+              // Sort stations (smallest distance first)
+              stationDistances.sort((a, b) => a.distance - b.distance);
+  
+              const nearestStation = stationDistances[0].station;
+              log.info(`Nearest station for redistribution: ${nearestStation.ID}`);
+              log.info(`Distance to target station: ${stationDistances[0].distance}`);
+  
+              // choose a worker randomly to assign him the redistribution task later on
+              // TODO checken ob syntax richtig ist
+              const workers = await SELECT.from(Workers);
+              const worker = workers[Math.floor(Math.random() * workers.length)];
+              log.info(`Assigned worker: ${worker.ID}`);
+  
+              // Create Redistribution Task and write it to database
+              // TODO checken ob Syntax stimmt
+              const redistributionTask = await INSERT.into(RedistributionTasks).entries({
+                status: "Pending",
+                assignedWorker: randomWorker.ID,
               });
-              log.info(`Redistribution Task Item created for Bike ${bikeToRedistribute.ID}: ${taskItem[0].ID}`);
+  
+              // Choose the bikes that should be transferred to target station
+              const bikesForRedistribution = await SELECT.from(Bikes)
+                .where("currentStation =", nearestStation.ID)
+                .and("status =", "available")
+                .limit(bikesToRedistribute);
+  
+              for (const bikeToRedistribute of bikesForRedistribution) {
+                // Create one task item for each bike
+                const taskItem = await INSERT.into(TaskItems).entries({
+                  bike: bikeToRedistribute.ID,
+                  departure: station.ID,
+                  target: nearestStation.ID,
+                  task: redistributionTask.ID,
+                });
+                log.info(`Redistribution Task Item created for Bike ${bikeToRedistribute.ID}: ${taskItem[0].ID}`);
+              }
             }
           }
         }
+        else {
+          log.error("No bike found with ID:", event.data.bikeID);
+        } 
+      } else {
+        log.error("BikeID not found in event data");
       }
     });
 
