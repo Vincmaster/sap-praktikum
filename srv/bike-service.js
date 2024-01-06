@@ -1,6 +1,8 @@
 // TODO manchmal backticks, manchmal single quotes, manchmal double quotes --> checken wann was geht
 const cds = require("@sap/cds");
+// const cdsHana = require("@sap/cds-hana");
 const log = cds.log("ibike");
+const hana = require("@sap/cds-hana")
 
 class BikeService extends cds.ApplicationService {
   async init() {
@@ -103,11 +105,45 @@ class BikeService extends cds.ApplicationService {
             // Step 3: For every station, calculate the distance to our target station
             const stationDistances = [];
             for (const candidateStation of candidateStations) {
-              // TODO: define "pointLocation" attribute in schema.cds in station table
-              const distance = ST_DISTANCE(station.pointLocation, candidateStation.pointLocation);
+              //const distance = hana.ST_DISTANCE(station.pointLocation, candidateStation.pointLocation);
+              const distanceQuery = `SELECT "pointLocation".ST_DISTANCE(NEW ST_POINT(${station.pointLocation.toString()})) FROM "Stations" WHERE "ID" = ${candidateStation.ID}`;
+              const result = await cds.run(distanceQuery);
+          
+              // The result contains the distance
+              const distance = result[0];
+              console.log(`Distance between Munich and Berlin stations: ${distance} meters`);
+
               stationDistances.push({ candidateStation, distance });
             }
             console.log("stationDistances", stationDistances)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             // Step 4: Sort stations (smallest distance first)
             stationDistances.sort((a, b) => a.distance - b.distance);

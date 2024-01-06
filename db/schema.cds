@@ -4,6 +4,8 @@ using {
     sap.common.CodeList
 } from '@sap/cds/common';
 
+
+
 namespace ibike.db;
 
 entity Bikes : cuid, managed {
@@ -23,6 +25,7 @@ entity Stations : cuid, managed {
     // bikes : Association to many Bikes on bikes.currentStation = $self;
     returnIncentiveLevel : Association to Incentives;
     rentIncentiveLevel : Association to Incentives;
+    pointLocation : hana.ST_POINT;
 }
 
 entity Incentives : cuid, managed {
