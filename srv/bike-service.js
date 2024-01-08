@@ -318,31 +318,35 @@ class BikeService extends cds.ApplicationService {
       }
     });
 
+    // Event: A worker changes the status of a task
+    messaging.on("TUM/ibike/em/bikes/taskStatusChanged", async (event) => {
     // For this event, 2 distinct cases exist:
     // 1) Worker sets status of task from “OPEN” to “IN_PROGRESS”
     // 2) D) Worker sets status of task from “IN_PROGRESS” to “CLOSED”
-    // TODO Event noch erstellen in bike-service.cds und Attributnamen pruefen
-    messaging.on("TUM/ibike/em/bikes/taskStatusChanged", async (event) => {
-      // Get all task items (i.e. all bikes) that belong to this redistrubtion task
-      const taskItems = await SELECT.from(TaskItems).where({ task: event.data.taskId });
 
-      if (event.data.status === "IN_PROGRESS" && event.data.oldStatus === "OPEN") {
-        // for every task Item/ bike, set the status to "redistributing" such that it is not vailable for customers to rent
-        // and decrease bikesAvailable of the corresponding station by 1
+      console.log("Start EVENT taskStatusChanged")
+      console.log("Event:", event);
+
+      // Get all task items (i.e. all bikes) that belong to this redistribution task
+      const taskItems = await SELECT.from(TaskItems).where({ task_ID: event.data.taskID });
+      console.log("taskItems", taskItems)
+
+      if (event.data.oldStatus === "OPEN" && event.data.newStatus === "IN_PROGRESS") {
+        // For every task item (i.e., bike), set the status to "redistributing" such that it is not available for customers to rent it
+        // and decrease bikesAvailable of the corresponding station by 1.
         for (const taskItem of taskItems) {
-          await UPDATE(Bikes).set({ status: "redistributing" }).where({ ID: taskItem.bike.ID });
-
-          await UPDATE(Station).set("bikesAvailable = bikesAvailable - 1").where({ ID: taskItem.departure.ID });
+          await UPDATE(Bikes).set({ status: "redistributing" }).where({ ID: taskItem.bike_ID });
+          await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: taskItem.departure_ID });
         }
-      } else if (event.data.status === "DONE" && event.data.oldStatus === "IN_PROGRESS") {
-        // for every task Item/ bike, set the status back to "available" such that it can be rented by customers again
-        // and increase bikesAvailable of the corresponding station by 1
+      } else if (event.data.oldStatus === "IN_PROGRESS" && event.data.newStatus === "DONE") {
+        // For every task item (i.e., bike), set the status to "redistributing" such that it is not available for customers to rent it
+        // and increase bikesAvailable of the corresponding station by 1.
         for (const taskItem of taskItems) {
           await UPDATE(Bikes)
-            .set({ status: "available", currentStation: taskItem.target.ID }) //evtl targetStation statt target, mal in Datamodel schauen
-            .where({ ID: taskItem.bike.ID, status: "redistributing" });
+            .set({ status: "stationed", currentStation: taskItem.target_ID })
+            .where({ ID: taskItem.bike_ID});
 
-          await UPDATE(Station).set("bikesAvailable = bikesAvailable + 1").where({ ID: taskItem.target.ID });
+          await UPDATE(Stations).set("bikesAvailable = bikesAvailable + 1").where({ ID: taskItem.target_ID });
         }
       }
     });

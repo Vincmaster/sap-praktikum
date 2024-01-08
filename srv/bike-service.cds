@@ -18,4 +18,8 @@ service BikeService {
         bikeId : UUID
     }
 
+    event statusChanged : {
+        bikeId: UUID
+    }
+
 }
