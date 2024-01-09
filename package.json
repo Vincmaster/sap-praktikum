@@ -44,6 +44,7 @@
                 "messaging": "enterprise-messaging-shared"
             },
             "auth": "mocked"
+            
         }
     },
     "sapux": [

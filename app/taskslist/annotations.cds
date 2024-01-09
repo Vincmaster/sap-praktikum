@@ -1,4 +1,4 @@
-using WorkerService as service from '../../srv/workers-service';
+using WorkersService as service from '../../srv/workers-service';
 
 annotate service.RedistributionTasks with @(
     UI.LineItem : [
@@ -12,6 +12,12 @@ annotate service.RedistributionTasks with @(
             Label : 'createdAt',
             Value : createdAt,
         },
+        {
+            $Type: 'UI.DataFieldForAction',
+            Label: 'Change Status',
+            Action: 'WorkersService.changeStatus',
+    },
+
     ]
 );
 
@@ -67,8 +73,6 @@ annotate service.RedistributionTasks with @(
     }
 );
 
-
-
 annotate service.RedistributionTasks with @(
     UI.Facets : [
     {
@@ -78,7 +82,12 @@ annotate service.RedistributionTasks with @(
     {
         $Type : 'UI.ReferenceFacet',
         Target : 'taskItems/@UI.LineItem',
-    }
-
+    },
+    
 ]
 );
+annotate service.RedistributionTasks actions {
+    changeStatus @(
+        Common.SideEffects: {TargetEntities: ['/WorkersService.EntityContainer/RedistributionTasks']}
+    );
+};
