@@ -88,8 +88,8 @@ class BikeService extends cds.ApplicationService {
 
             // Step 1: Determine how many bikes should be redistributed to this station
             // The station should have at least 6 bikes or 40% of its max Capacity after redistribution
-            const bikesToRedistribute = Math.max(6, Math.ceil(station.maxCapacity * 0.4)) - bikesCount;
-            console.log("bikesToRedistribute", bikesToRedistribute)
+            const numOfBikesToRedistribute = Math.max(6, Math.ceil(station.maxCapacity * 0.4)) - bikesCount;
+            console.log("numOfBikesToRedistribute", numOfBikesToRedistribute)
 
             // Step 2: Determine all stations from which we can possibly transfer bikes to our target station
             // Condition: After redistribution, at least 5 bikes or 20% of max Capcity should be left over
@@ -97,7 +97,7 @@ class BikeService extends cds.ApplicationService {
             const candidateStations = await SELECT.from(Stations)
               .where("ID !=", event.data.stationID)
               .and(
-                `bikesAvailable - ${bikesToRedistribute} > 5 OR bikesAvailable - ${bikesToRedistribute} > maxCapacity * 0.2`
+                `bikesAvailable - ${numOfBikesToRedistribute} > 5 OR bikesAvailable - ${numOfBikesToRedistribute} > maxCapacity * 0.2`
               );
             console.log("candidateStations", candidateStations)
             // TODO 05.01.2024 hier weitermachen bis herher funktionier es, St distance ist ned definierrt
@@ -106,9 +106,9 @@ class BikeService extends cds.ApplicationService {
             const stationDistances = [];
             for (const candidateStation of candidateStations) {
               //const distance = hana.ST_DISTANCE(station.pointLocation, candidateStation.pointLocation);
-              const distanceQuery = `SELECT "pointLocation".ST_DISTANCE(NEW ST_POINT(${station.pointLocation.toString()})) FROM "Stations" WHERE "ID" = ${candidateStation.ID}`;
+              const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(${station.pointLocation.toString()})) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ${candidateStation.ID}`;
               const result = await cds.run(distanceQuery);
-          
+
               // The result contains the distance
               const distance = result[0];
               console.log(`Distance between Munich and Berlin stations: ${distance} meters`);
@@ -117,71 +117,43 @@ class BikeService extends cds.ApplicationService {
             }
             console.log("stationDistances", stationDistances)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             // Step 4: Sort stations (smallest distance first)
             stationDistances.sort((a, b) => a.distance - b.distance);
             console.log("stationDistances sorted", stationDistances)
 
-            const nearestStation = stationDistances[0].station;
-            console.log("Nearest station for redistribution:", nearestStation.ID);
-            console.log("Distance to target station:", stationDistances[0].distance);
+            const nearestStation = stationDistances[0].station; //TODO brauchen wir das .station überhaupt?
+            console.log("nearestStation::", nearestStation.ID);
+            console.log("Distance to target station:", stationDistances[0].distance); // TODO brauchen wir .ditance überhaupt
 
-            // Step 5: Choose a worker randomly to assign him the redistribution task later on
-            // TODO checken ob syntax richtig ist
+            // Step 5: Choose a worker randomly to assign him or her the redistribution task later on
             const workers = await SELECT.from(Workers);
             const worker = workers[Math.floor(Math.random() * workers.length)];
-            console.log("Assigned worker:", worker.ID);
+            console.log("worker:", worker);
 
             // Step 5: Create Redistribution Task
-            // TODO checken ob Syntax stimmt
+            // TODO prüfen ob das Obejkt wirklich erzeugt wird nach insert
             const redistributionTask = await INSERT.into(RedistributionTasks).entries({
-              status: "Pending",
-              assignedWorker: randomWorker.ID,
+              status_code: "OPEN",
+              assignedWorker_ID: randomWorker.ID,
             });
+            console.log("redistributionTask", redistributionTask)
 
             // Step 6: Choose the bikes that should be transferred to target station
-            const bikesForRedistribution = await SELECT.from(Bikes)
-              .where("currentStation =", nearestStation.ID)
-              .and("status =", "available")
-              .limit(bikesToRedistribute);
+            const bikesToRedistribute = await SELECT.from(Bikes)
+              .where({currentStation_ID: nearestStation.ID, status: "stationed"})
+              .limit(numOfBikesToRedistribute);
+            console.log("bikesToRedistribute", bikesToRedistribute)
 
-            // Step 7: TODO Kommentar schreiben
-            for (const bikeToRedistribute of bikesForRedistribution) {
-              // Create one task item for each bike
+            // Step 7: Create one task item for each bike
+            for (const bikeToRedistribute of bikesToRedistribute) {
+              console.log("Creating a new taskItem ...")
               const taskItem = await INSERT.into(TaskItems).entries({
                 bike: bikeToRedistribute.ID,
-                departure: station.ID,
-                target: nearestStation.ID,
+                departure: nearestStation.ID,
+                target: station.ID,
                 task: redistributionTask.ID,
               });
-              log.info(`Redistribution Task Item created for Bike ${bikeToRedistribute.ID}: ${taskItem[0].ID}`);
+              console.log("taskItem created:", taskItem)
             }
           }
 
@@ -318,20 +290,17 @@ class BikeService extends cds.ApplicationService {
       }
     });
 
-    // Event: A worker changes the status of a task
+    // Event: A worker changes the status of a task (either from OPEN to IN_PROGESS or from IN_PROGRESS to DONE)
     messaging.on("TUM/ibike/em/bikes/taskStatusChanged", async (event) => {
-    // For this event, 2 distinct cases exist:
-    // 1) Worker sets status of task from “OPEN” to “IN_PROGRESS”
-    // 2) D) Worker sets status of task from “IN_PROGRESS” to “CLOSED”
-
-      console.log("Start EVENT taskStatusChanged")
       console.log("Event:", event);
 
       // Get all task items (i.e. all bikes) that belong to this redistribution task
       const taskItems = await SELECT.from(TaskItems).where({ task_ID: event.data.taskID });
-      console.log("taskItems", taskItems)
+      console.log("taskItems:", taskItems)
 
       if (event.data.oldStatus === "OPEN" && event.data.newStatus === "IN_PROGRESS") {
+        console.log("Changing status from OPEN to IN_PROGRESS ...")
+
         // For every task item (i.e., bike), set the status to "redistributing" such that it is not available for customers to rent it
         // and decrease bikesAvailable of the corresponding station by 1.
         for (const taskItem of taskItems) {
@@ -339,13 +308,15 @@ class BikeService extends cds.ApplicationService {
           await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: taskItem.departure_ID });
         }
       } else if (event.data.oldStatus === "IN_PROGRESS" && event.data.newStatus === "DONE") {
-        // For every task item (i.e., bike), set the status to "redistributing" such that it is not available for customers to rent it
+        console.log("Changing status from IN_PROGRESS to DONE ...")
+
+        // For every task item (i.e., bike), set the status to "stationed" such that it is available for customers to rent it
+        // and set the target station as its new station 
         // and increase bikesAvailable of the corresponding station by 1.
         for (const taskItem of taskItems) {
           await UPDATE(Bikes)
             .set({ status: "stationed", currentStation: taskItem.target_ID })
             .where({ ID: taskItem.bike_ID});
-
           await UPDATE(Stations).set("bikesAvailable = bikesAvailable + 1").where({ ID: taskItem.target_ID });
         }
       }
