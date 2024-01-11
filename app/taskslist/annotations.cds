@@ -4,20 +4,28 @@ annotate service.RedistributionTasks with @(
     UI.LineItem : [
         {
             $Type : 'UI.DataField',
-            Label : 'status_code',
+            Label : 'Task ID',
+            Value : ID,
+        },{
+            $Type : 'UI.DataField',
+            Label : 'Status',
             Value : status_code,
         },
         {
             $Type : 'UI.DataField',
-            Label : 'createdAt',
+            Label : 'Created at',
             Value : createdAt,
         },
         {
             $Type: 'UI.DataFieldForAction',
-            Label: 'Change Status',
+            Label: 'Start Task',
+            Action: 'WorkersService.startTask',
+    },
+        {
+            $Type: 'UI.DataFieldForAction',
+            Label: 'Finish Task',
             Action: 'WorkersService.changeStatus',
     },
-
     ]
 );
 
@@ -26,17 +34,17 @@ annotate service.TaskItems with @(
         {
             $Type : 'UI.DataField',
             Label : 'From',
-            Value : departure_ID,
+            Value : departure.location,
         },
         {
             $Type : 'UI.DataField',
             Label : 'To',
-            Value : target_ID,
+            Value : target.location,
         },
         {
             $Type : 'UI.DataField',
             Label : 'Bike',
-            Value : bike_ID,
+            Value : bike.name,
         },
     ]
 );
@@ -88,6 +96,9 @@ annotate service.RedistributionTasks with @(
 );
 annotate service.RedistributionTasks actions {
     changeStatus @(
+        Common.SideEffects: {TargetEntities: ['/WorkersService.EntityContainer/RedistributionTasks']}
+    );
+    startTask @(
         Common.SideEffects: {TargetEntities: ['/WorkersService.EntityContainer/RedistributionTasks']}
     );
 };
