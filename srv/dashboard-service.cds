@@ -2,10 +2,38 @@ using {ibike.db as db} from '../db/schema';
 
 service DashboardService {
 
-    entity Bikes as projection on db.Bikes;
-    entity Stations as projection on db.Stations;
-    entity RedistributionTasks as projection on db.RedistributionTasks;
-    entity Incentives as projection on db.Incentives;
-    entity Workers as projection on db.Workers;
-    
+ @readonly
+    @(
+        Aggregation       : {ApplySupported: {
+            $Type                 : 'Aggregation.ApplySupportedType',
+            Transformations       : [
+                'aggregate',
+                'groupby',
+                'concat',
+                'identity',
+                'filter',
+                'search',
+                'bottomcount',
+                'topcount',
+                'orderby',
+                'top',
+                'skip'
+            ],
+            GroupableProperties   : [
+                'ID',
+                'createdAt',
+                'createdBy'
+            ],
+            AggregatableProperties: [
+                {Property: ID},
+                {Property: assignedWorker.name},
+                {Property: status_code}
+            ]
+        }},
+        Common.SemanticKey: [ID]
+    )
+    entity RedistributionTask as select from db.RedistributionTasks;
+    entity Stations as select from db.Stations;
+    entity Workers as select from db.Workers;
+    entity LowStations as select from db.Stations where bikesAvailable < 10; 
 }
