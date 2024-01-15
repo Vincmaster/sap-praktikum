@@ -104,9 +104,32 @@ class BikeService extends cds.ApplicationService {
             // Step 3: For every station, calculate the distance to our target station
             const stationDistances = [];
             for (const candidateStation of candidateStations) {
-              //const distance = hana.ST_DISTANCE(station.pointLocation, candidateStation.pointLocation);
-              const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(${station.pointLocation.toString()})) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ${candidateStation.ID}`;
-              const result = await cds.run(distanceQuery);
+              console.log("In candidateStations loop.")
+              
+              console.log("pointLocation binary:", station.pointLocation.toString())
+
+              // Eigentlich müsste es doch einfach so funktionieren (mit parametrized query):
+              // const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(?) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ?`
+              //const result = await cds.run(distanceQuery, [station.pointLocation, candidateStation.ID]);
+              // --> das gibt Error --> SqlError: invalid datatype: Not supported argument type: function st_distance(Point, NString) does not exist.
+
+              // so gibt es zumindest keinen Fehler:
+              const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(?)) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ?`
+              const result = await cds.run(distanceQuery, [station.pointLocation, candidateStation.ID]);
+              // --> 
+
+              console.log("distanceQuery", distanceQuery)
+              console.log("result:", result)
+
+              // const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(${station.pointLocation.toString()})) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ${candidateStation.ID}`;
+              // const distanceQuery = `SELECT "LOCATION" FROM "IBIKE_DB_STATIONS" WHERE "ID" = ${candidateStation.ID}`; // DAS FUNKTIONIERT NICHT
+              // const distanceQuery = `SELECT "POINTLOCATION" FROM "IBIKE_DB_STATIONS" WHERE "ID" = ?`; // DAS FUNKTIONIERT
+              //const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(?)) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ?` //hat zumindest keinen Fehler gegeben
+              
+              // const result = await cds.run(distanceQuery, [candidateStation.ID]); // DAS FUNKTIONIERT
+              // const result = await cds.run(distanceQuery, [station.pointLocation.toString(), candidateStation.ID]); DAS GAB Wrong input for LOb type
+              // const result = await cds.run(distanceQuery);
+              
 
               // The result contains the distance
               const distance = result[0];
