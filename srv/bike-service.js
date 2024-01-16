@@ -335,6 +335,7 @@ class BikeService extends cds.ApplicationService {
         // For every task item (i.e., bike), set the status to "stationed" such that it is available for customers to rent it
         // and set the target station as its new station 
         // and increase bikesAvailable of the corresponding station by 1.
+        //TODO: Reset incentive level for receiving station
         for (const taskItem of taskItems) {
           await UPDATE(Bikes)
             .set({ status: "stationed", currentStation: taskItem.target_ID })
