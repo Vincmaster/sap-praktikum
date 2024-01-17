@@ -8,6 +8,7 @@
     "dependencies": {
         "@sap/cds": "^7",
         "@sap/cds-hana": "^2",
+        "@sap/hana-client": "^2.19.21",
         "@sap/xb-msg-amqp-v100": "^0.9.58",
         "@sap/xssec": "^3",
         "express": "^4",
@@ -37,6 +38,11 @@
         "requires": {
             "messaging": {
                 "kind": "file-based-messaging"
+            },
+            "[hybrid]": {
+                "db": "hana",
+                "auth": "mocked",
+                "messaging": "enterprise-messaging-shared"
             },
             "[production]": {
                 "db": "hana",

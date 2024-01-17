@@ -1,6 +1,6 @@
-ID,createdAt,createdBy,modifiedAt,modifiedBy,location,maxCapacity,bikesAvailable,returnIncentiveLevel_ID,rentIncentiveLevel_ID
-cccccccc-cccc-cccc-cccc-ccccccccccc1,2023-12-07T08:00:00Z,John Doe,2023-12-07T10:30:00Z,Jane Smith,Location A,50,25,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2
-cccccccc-cccc-cccc-cccc-ccccccccccc2,2023-12-07T09:15:00Z,Jane Smith,2023-12-07T11:45:00Z,John Doe,Location B,40,10,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
-cccccccc-cccc-cccc-cccc-ccccccccccc3,2023-12-07T10:45:00Z,Adam Johnson,2023-12-07T13:00:00Z,Emily Brown,Location C,60,45,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2
-cccccccc-cccc-cccc-cccc-ccccccccccc4,2023-12-07T11:30:00Z,Sarah Wilson,2023-12-07T14:20:00Z,Michael Clark,Location D,30,5,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3
-cccccccc-cccc-cccc-cccc-ccccccccccc5,2023-12-07T13:20:00Z,Emily Brown,2023-12-07T16:10:00Z,Adam Johnson,Location E,70,60,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4
+ID,createdAt,createdBy,modifiedAt,modifiedBy,location,maxCapacity,bikesAvailable,returnIncentiveLevel_ID,rentIncentiveLevel_ID,pointLocation
+cccccccc-cccc-cccc-cccc-ccccccccccc1,2023-12-07T08:00:00Z,John Doe,2023-12-07T10:30:00Z,Jane Smith,Munich,50,25,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2,"POINT(11.5755 48.1372)"
+cccccccc-cccc-cccc-cccc-ccccccccccc2,2023-12-07T09:15:00Z,Jane Smith,2023-12-07T11:45:00Z,John Doe,Garching,40,10,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1,"POINT(11.6532 48.2489)"
+cccccccc-cccc-cccc-cccc-ccccccccccc3,2023-12-07T10:45:00Z,Adam Johnson,2023-12-07T13:00:00Z,Emily Brown,Starnberg,60,45,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2,"POINT(11.3390 48.0000)"
+cccccccc-cccc-cccc-cccc-ccccccccccc4,2023-12-07T11:30:00Z,Sarah Wilson,2023-12-07T14:20:00Z,Michael Clark,Unterschleissheim,30,5,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3,"POINT(11.5672 48.2841)"
+cccccccc-cccc-cccc-cccc-ccccccccccc5,2023-12-07T13:20:00Z,Emily Brown,2023-12-07T16:10:00Z,Adam Johnson,Herrsching,70,60,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4,"POINT(11.1754 47.9960)"
