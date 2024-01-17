@@ -1,4 +1,4 @@
-using WorkerService as service from '../../srv/workers-service';
+using WorkersService as service from '../../srv/workers-service';
 
 annotate service.Workers with @(
     UI.LineItem : [

@@ -29,7 +29,8 @@
         "undeploy": "cf undeploy ibike --delete-services --delete-service-keys --delete-service-brokers",
         "build": "rimraf resources mta_archives && mbt build --mtar archive",
         "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
-        "watch-taskslist": "cds watch --open taskslist/webapp/index.html?sap-ui-xx-viewCache=false"
+        "watch-taskslist": "cds watch --open taskslist/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-dashboard": "cds watch --open dashboard/webapp/index.html?sap-ui-xx-viewCache=false"
     },
     "cds": {
         "features": {
@@ -54,6 +55,7 @@
     },
     "sapux": [
         "app/tasklist",
-        "app/taskslist"
+        "app/taskslist",
+        "app/dashboard"
     ]
 }

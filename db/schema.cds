@@ -45,7 +45,7 @@ entity TaskItems : cuid, managed {
 entity RedistributionTasks : cuid, managed {
     status : Association to TaskStatus;
     assignedWorker : Association to Workers;
-    // taskItems : Composition of  many TaskItems on tasksItems.task = $self;
+    taskItems : Association to many TaskItems on taskItems.task = $self;
 }
 
 entity TaskStatus : CodeList {
