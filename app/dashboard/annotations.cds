@@ -8,7 +8,7 @@ annotate service.RedistributionTask with @(
     ],
     UI.PresentationVariant                         : {
         GroupBy       : [
-            ID,
+            status_code,
             assignedWorker_ID
         ],
         Total         : [

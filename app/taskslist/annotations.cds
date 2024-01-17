@@ -65,6 +65,23 @@ annotate service.RedistributionTasks with @(
 );
 
 annotate service.RedistributionTasks with @(
+    UI.Identification : [
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'WorkersService.startTask',
+            Label : 'Start Task',
+            Criticality : 0,
+        },
+                {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'WorkersService.changeStatus',
+            Label : 'Finish Task',
+            Criticality : 0,
+        },
+    ]
+);
+
+annotate service.RedistributionTasks with @(
     UI.FieldGroup #Tasks : {
         $Type : 'UI.FieldGroupType',
             Data : [
