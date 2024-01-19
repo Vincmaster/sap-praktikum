@@ -1,6 +1,6 @@
 using {ibike.db as db} from '../db/schema';
 
-service DashboardService {
+service DashboardService @(requires: 'operations_manager') {
 
  @readonly
     @(
@@ -32,7 +32,6 @@ service DashboardService {
     )
     entity RedistributionTask as select from db.RedistributionTasks {
         *, 
-        assignedWorker.name as workerName,
         1 as count: Integer
     };
     entity Stations as select from db.Stations{

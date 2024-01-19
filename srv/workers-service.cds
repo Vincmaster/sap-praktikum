@@ -1,6 +1,6 @@
 using {ibike.db as db} from '../db/schema';
 
-service WorkersService @(requires: 'authenticated-user'){
+service WorkersService @(requires: 'worker'){
 
     entity Bikes as projection on db.Bikes;
     entity Stations as projection on db.Stations;

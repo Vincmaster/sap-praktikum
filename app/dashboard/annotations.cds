@@ -3,12 +3,12 @@ using DashboardService as service from '../../srv/dashboard-service';
 annotate service.RedistributionTask with @(
 
         UI.SelectionFields                             : [
-        workerName,
+        assignedWorker_ID,
     ],
 
     UI.PresentationVariant                         : {
         GroupBy       : [
-            workerName,
+            assignedWorker_ID,
         ],
         Total         : [
             count
@@ -32,7 +32,7 @@ annotate service.RedistributionTask with @(
                 {
             $Type : 'UI.DataField',
             Label : 'Assigned Worker',
-            Value : assignedWorker.name,
+            Value : assignedWorker_ID,
         },
         {
             $Type : 'UI.DataField',
@@ -57,7 +57,7 @@ annotate service.RedistributionTask with @(
         '@Analytics.AggregatedProperty#numberofTasks',
         ],    
     Dimensions : [
-        workerName,
+        assignedWorker_ID,
     ],
     MeasureAttributes: [
         {
@@ -67,7 +67,7 @@ annotate service.RedistributionTask with @(
     ],
     DimensionAttributes: [
         {
-            Dimension : workerName,
+            Dimension : assignedWorker_ID,
             Role : #Category
         }
     ]

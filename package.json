@@ -50,7 +50,15 @@
                 "auth": "xsuaa",
                 "messaging": "enterprise-messaging-shared"
             },
-            "auth": "mocked"
+            "auth": "mocked",
+            
+            "db": {
+                "kind": "sqlite",
+                "impl": "@cap-js/sqlite",
+                "credentials": {
+                    "url": "db.sqlite"
+                }
+            }
         }
     },
     "sapux": [
