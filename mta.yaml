@@ -40,10 +40,6 @@ modules:
     build-result: resources
     requires:
     - artifacts:
-      - tasklist.zip
-      name: tasklist
-      target-path: resources/
-    - artifacts:
       - taskslist.zip
       name: taskslist
       target-path: resources/
@@ -51,16 +47,6 @@ modules:
       - dashboard.zip
       name: dashboard
       target-path: resources/
-- name: tasklist
-  type: html5
-  path: app/tasklist
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
 - name: taskslist
   type: html5
   path: app/taskslist
