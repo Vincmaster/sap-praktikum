@@ -2,3 +2,7 @@ ID,createdAt,createdBy,modifiedAt,modifiedBy,name,email
 ffffffff-ffff-ffff-ffff-fffffffffff1,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,alice,alice@ibike.com
 ffffffff-ffff-ffff-ffff-fffffffffff2,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,bob,bob@ibike.com
 ffffffff-ffff-ffff-ffff-fffffffffff3,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,carol,carol@ibike.com
+ffffffff-ffff-ffff-ffff-fffffffffff4,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,a.heckl@hotmail.de,andi@ibike.com
+ffffffff-ffff-ffff-ffff-fffffffffff5,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,jan.krueckemeier@tum.de,jan@ibike.com
+ffffffff-ffff-ffff-ffff-fffffffffff6,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,falkenre@in.tum.de,vincent@ibike.com
+ffffffff-ffff-ffff-ffff-fffffffffff7,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,ge86zaw@mytum.de,janina@ibike.com

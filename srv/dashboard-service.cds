@@ -1,6 +1,6 @@
 using {ibike.db as db} from '../db/schema';
 
-service DashboardService @(requires: 'operations_manager') {
+service DashboardService {
 
  @readonly
     @(
