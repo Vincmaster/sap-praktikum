@@ -3,17 +3,15 @@ using DashboardService as service from '../../srv/dashboard-service';
 annotate service.RedistributionTask with @(
 
         UI.SelectionFields                             : [
-        ID,
-        assignedWorker_ID
+        assignedWorker_ID,
     ],
+
     UI.PresentationVariant                         : {
         GroupBy       : [
-            status_code,
-            assignedWorker_ID
+            assignedWorker_ID,
         ],
         Total         : [
-            status_code,
-            ID
+            count
         ],
         Visualizations: [
             '@UI.Chart',
@@ -34,7 +32,7 @@ annotate service.RedistributionTask with @(
                 {
             $Type : 'UI.DataField',
             Label : 'Assigned Worker',
-            Value : assignedWorker.name,
+            Value : assignedWorker_ID,
         },
         {
             $Type : 'UI.DataField',
@@ -44,39 +42,36 @@ annotate service.RedistributionTask with @(
     ],
 
 
-     Analytics.AggregatedProperty #numberOfStatusCodes : {
-        Name                : 'NumberStatusCodes',
+     Analytics.AggregatedProperty #numberofTasks : {
+        Name                : 'NumberTasks',
         AggregationMethod   : 'sum',
-        AggregatableProperty: status_code,
-        ![@Common.Label]    : 'Number of Status Codes'
-    },
-
-     Analytics.AggregatedProperty #numberOfAssingedWorkers : {
-        Name                : 'NumberAssingedWorkers',
-        AggregationMethod   : 'sum',
-        AggregatableProperty: assignedWorker_ID,
-        ![@Common.Label]    : 'Number of Assigned Workers'
+        AggregatableProperty: count,
+        ![@Common.Label]    : 'Number of Tasks'
     },
 
 
-    UI.Chart                                       : {
-        Title              : 'Status of Tasks',
-        ChartType          : #Column,
-        DynamicMeasures    : [
-            '@Analytics.AggregatedProperty#numberOfStatusCodes',
-            '@Analytics.AggregatedProperty#numberOfAssingedWorkers'
-        ],
-        Dimensions         : [
-            'ID',
-            'createdBy'
-        ],
-        MeasureAttributes  : [{
-            DynamicMeasure: '@Analytics.AggregatedProperty#numberOfStatusCodes',
-            Role          : #Axis1,
-        }],
-        DimensionAttributes: [{
-            Dimension: ID,
-            Role     : #Category
-        }]
-    }
+    UI.Chart :{
+    Title : 'Task Chart',
+    ChartType : #Column,
+    DynamicMeasures    : [
+        '@Analytics.AggregatedProperty#numberofTasks',
+        ],    
+    Dimensions : [
+        assignedWorker_ID,
+    ],
+    MeasureAttributes: [
+        {
+            DynamicMeasure : '@Analytics.AggregatedProperty#numberofTasks',
+            Role : #Axis1
+        }
+    ],
+    DimensionAttributes: [
+        {
+            Dimension : assignedWorker_ID,
+            Role : #Category
+        }
+    ]
+    },
 );
+
+

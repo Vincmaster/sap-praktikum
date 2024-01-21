@@ -81,6 +81,36 @@ modules:
     - npm install
     - npm run build:cf
     supported-platforms: []
+- name: ibike-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: ibike-destination-service
+    parameters:
+      content-target: true
+  - name: ibike-repo-host
+    parameters:
+      service-key:
+        name: ibike_html_repo_host-key
+  - name: ibike-auth
+    parameters:
+      service-key:
+        name: ibike-auth-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: ibike_html_repo_host
+          ServiceInstanceName: ibike-html5-srv
+          ServiceKeyName: ibike_html_repo_host-key
+          sap.cloud.service: ibike
+        - Authentication: OAuth2UserTokenExchange
+          Name: ibike_portfolio_auth
+          ServiceInstanceName: ibike-auth
+          ServiceKeyName: ibike-auth-key
+          sap.cloud.service: ibike
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
 resources:
 - name: ibike-auth
   type: org.cloudfoundry.managed-service
@@ -112,7 +142,7 @@ resources:
   type: org.cloudfoundry.managed-service
   parameters:
     config:
-      HTML5Runtime_enabled: false
+      HTML5Runtime_enabled: true
       init_data:
         instance:
           destinations:

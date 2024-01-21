@@ -2,3 +2,4 @@ ID,createdAt,createdBy,modifiedAt,modifiedBy,status_code,assignedWorker_ID
 cccccccc-cccc-cccc-cccc-cccccccccc01,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,IN_PROGRESS,ffffffff-ffff-ffff-ffff-fffffffffff1
 cccccccc-cccc-cccc-cccc-cccccccccc02,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,IN_PROGRESS,ffffffff-ffff-ffff-ffff-fffffffffff2
 cccccccc-cccc-cccc-cccc-cccccccccc03,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,IN_PROGRESS,ffffffff-ffff-ffff-ffff-fffffffffff3
+cccccccc-cccc-cccc-cccc-cccccccccc04,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,OPEN,ffffffff-ffff-ffff-ffff-fffffffffff1

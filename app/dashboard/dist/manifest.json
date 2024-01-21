@@ -1,7 +1,7 @@
 {
     "_version": "1.59.0",
     "sap.app": {
-        "id": "taskslist",
+        "id": "dashboard",
         "type": "application",
         "i18n": "i18n/i18n.properties",
         "applicationVersion": {
@@ -11,13 +11,13 @@
         "description": "{{appDescription}}",
         "resources": "resources.json",
         "sourceTemplate": {
-            "id": "@sap/generator-fiori:worklist",
+            "id": "@sap/generator-fiori:alp",
             "version": "1.12.1",
-            "toolsId": "bf6c281f-f3c7-40b4-86ed-a3f991482377"
+            "toolsId": "9920a7dd-2eec-4b1f-88eb-e968080e59c5"
         },
         "dataSources": {
             "mainService": {
-                "uri": "odata/v4/workers/",
+                "uri": "odata/v4/dashboard/",
                 "type": "OData",
                 "settings": {
                     "annotations": [],
@@ -28,10 +28,11 @@
         },
         "crossNavigation": {
             "inbounds": {
-                "Task-Process": {
-                    "semanticObject": "Task",
-                    "action": "Process",
+                "Dashboard-View": {
+                    "semanticObject": "Dashboard",
+                    "action": "View",
                     "title": "{{flpTitle}}",
+                    "subTitle": "{{flpSubtitle}}",
                     "signature": {
                         "parameters": {},
                         "additionalParameters": "allowed"
@@ -59,7 +60,7 @@
     "sap.ui5": {
         "flexEnabled": true,
         "dependencies": {
-            "minUI5Version": "1.120.3",
+            "minUI5Version": "1.120.4",
             "libs": {
                 "sap.m": {},
                 "sap.ui.core": {},
@@ -75,7 +76,7 @@
             "i18n": {
                 "type": "sap.ui.model.resource.ResourceModel",
                 "settings": {
-                    "bundleName": "taskslist.i18n.i18n"
+                    "bundleName": "dashboard.i18n.i18n"
                 }
             },
             "": {
@@ -97,52 +98,71 @@
             "css": []
         },
         "routing": {
+            "config": {},
             "routes": [
                 {
                     "pattern": ":?query:",
-                    "name": "RedistributionTasksList",
-                    "target": "RedistributionTasksList"
+                    "name": "RedistributionTaskList",
+                    "target": "RedistributionTaskList"
                 },
                 {
-                    "pattern": "RedistributionTasks({key}):?query:",
-                    "name": "RedistributionTasksObjectPage",
-                    "target": "RedistributionTasksObjectPage"
+                    "pattern": "RedistributionTask({key}):?query:",
+                    "name": "RedistributionTaskObjectPage",
+                    "target": "RedistributionTaskObjectPage"
                 }
             ],
             "targets": {
-                "RedistributionTasksList": {
+                "RedistributionTaskList": {
                     "type": "Component",
-                    "id": "RedistributionTasksList",
+                    "id": "RedistributionTaskList",
                     "name": "sap.fe.templates.ListReport",
                     "options": {
                         "settings": {
-                            "contextPath": "/RedistributionTasks",
+                            "contextPath": "/RedistributionTask",
                             "variantManagement": "Page",
-                            "hideFilterBar": true,
                             "navigation": {
-                                "RedistributionTasks": {
+                                "RedistributionTask": {
                                     "detail": {
-                                        "route": "RedistributionTasksObjectPage"
+                                        "route": "RedistributionTaskObjectPage"
                                     }
                                 }
+                            },
+                            "controlConfiguration": {
+                                "@com.sap.vocabularies.UI.v1.LineItem": {
+                                    "tableSettings": {
+                                        "type": "AnalyticalTable",
+                                        "selectionMode": "Auto"
+                                    }
+                                }
+                            },
+                            "views": {
+                                "paths": [
+                                    {
+                                        "primary": [
+                                            {
+                                                "annotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant"
+                                            }
+                                        ],
+                                        "secondary": [
+                                            {
+                                                "annotationPath": "com.sap.vocabularies.UI.v1.LineItem"
+                                            }
+                                        ],
+                                        "defaultPath": "both"
+                                    }
+                                ]
                             }
                         }
                     }
                 },
-                "RedistributionTasksObjectPage": {
+                "RedistributionTaskObjectPage": {
                     "type": "Component",
-                    "id": "RedistributionTasksObjectPage",
+                    "id": "RedistributionTaskObjectPage",
                     "name": "sap.fe.templates.ObjectPage",
                     "options": {
                         "settings": {
                             "editableHeaderContent": false,
-                            "contextPath": "/RedistributionTasks",
-                            "sectionLayout": "Tabs",
-                            "content": {
-                                "header": {
-                                    "anchorBarVisible": false
-                                }
-                            }
+                            "contextPath": "/RedistributionTask"
                         }
                     }
                 }
@@ -151,7 +171,7 @@
     },
     "sap.fiori": {
         "registrationIds": [],
-        "archeType": "transactional"
+        "archeType": "analytical"
     },
     "sap.cloud": {
         "public": true,

@@ -1,5 +1,31 @@
 {
-  "scopes": [],
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.operations_manager",
+      "description": "operations_manager"
+    },
+    {
+      "name": "$XSAPPNAME.worker",
+      "description": "worker"
+    }
+  ],
   "attributes": [],
-  "role-templates": []
+  "role-templates": [
+    {
+      "name": "operations_manager",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.operations_manager"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "worker",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.worker"
+      ],
+      "attribute-references": []
+    }
+  ]
 }

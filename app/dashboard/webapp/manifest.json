@@ -25,6 +25,20 @@
           "odataVersion": "4.0"
         }
       }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "Dashboard-View": {
+          "semanticObject": "Dashboard",
+          "action": "View",
+          "title": "{{flpTitle}}",
+          "subTitle": "{{flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
     }
   },
   "sap.ui": {
@@ -158,5 +172,9 @@
   "sap.fiori": {
     "registrationIds": [],
     "archeType": "analytical"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "ibike"
   }
 }
