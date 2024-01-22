@@ -33,7 +33,7 @@ service StationsService {
         *, 
         1 as count: Integer
     };
-    entity Workers as select from db.Workers;
-    entity Incentives as select from db.Incentives;
-    entity LowStations as select from db.Stations where bikesAvailable < 10; 
+    entity Workers as projection on db.Workers;
+    entity Incentives as projection on db.Incentives;
+    entity Bikes as projection on db.Bikes;
 }
