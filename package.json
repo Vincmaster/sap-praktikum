@@ -30,7 +30,8 @@
         "build": "rimraf resources mta_archives && mbt build --mtar archive",
         "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
         "watch-taskslist": "cds watch --open taskslist/webapp/index.html?sap-ui-xx-viewCache=false",
-        "watch-dashboard": "cds watch --open dashboard/webapp/index.html?sap-ui-xx-viewCache=false"
+        "watch-dashboard": "cds watch --open dashboard/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-stations": "cds watch --open stations/webapp/index.html?sap-ui-xx-viewCache=false"
     },
     "cds": {
         "features": {
@@ -50,20 +51,13 @@
                 "auth": "xsuaa",
                 "messaging": "enterprise-messaging-shared"
             },
-            "auth": "mocked",
-            
-            "db": {
-                "kind": "sqlite",
-                "impl": "@cap-js/sqlite",
-                "credentials": {
-                    "url": "db.sqlite"
-                }
-            }
+            "auth": "mocked"
         }
     },
     "sapux": [
         "app/tasklist",
         "app/taskslist",
-        "app/dashboard"
+        "app/dashboard",
+        "app/stations"
     ]
 }
