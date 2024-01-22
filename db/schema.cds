@@ -22,7 +22,7 @@ entity Stations : cuid, managed {
     location : String(128) not null @mandatory;
     maxCapacity : Int32;
     bikesAvailable : Int32;
-    // bikes : Association to many Bikes on bikes.currentStation = $self;
+    bikes : Association to many Bikes on bikes.currentStation = $self;
     returnIncentiveLevel : Association to Incentives;
     rentIncentiveLevel : Association to Incentives;
     pointLocation : hana.ST_POINT;
