@@ -1,4 +1,3 @@
-// TODO manchmal backticks, manchmal single quotes, manchmal double quotes --> checken wann was geht
 const cds = require("@sap/cds")
 const log = cds.log("ibike")
 
@@ -20,19 +19,6 @@ class BikeService extends cds.ApplicationService {
       const station = await SELECT.one.from(Stations).where({ ID: event.data.stationID })
       console.log("station:", station)
 
-      // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the stations
-      const returnIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
-      const returnIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
-      const returnIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
-      const returnIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
-
-      const thresholdLowPercentage = 0.4
-      const thresholdMediumPercentage = 0.2
-      const thresholdHighPercentage = 0.1
-
-      const redistrThresholdAbs = 5
-      const redistrThresholdRel = 0.2
-
       if (bike && station) {
         // Set status to "rented" and decrease bikesAvailable in this station by 1
         await UPDATE(Bikes).set({ status: "rented" }).where({ ID: event.data.bikeID })
@@ -52,6 +38,12 @@ class BikeService extends cds.ApplicationService {
         3) between 20% and 10% of max capacity available --> incentive level "medium"
         4) between 10% and 0% of max capacity available --> incentive level "high"
          */
+
+        // Define constants for the respective threshold as just described
+        const thresholdLowPercentage = 0.4
+        const thresholdMediumPercentage = 0.2
+        const thresholdHighPercentage = 0.1
+
         const thresholdLow = Math.floor(thresholdLowPercentage * station.maxCapacity)
         const thresholdMedium = Math.floor(thresholdMediumPercentage * station.maxCapacity)
         const thresholdHigh = Math.floor(thresholdHighPercentage * station.maxCapacity)
@@ -59,7 +51,13 @@ class BikeService extends cds.ApplicationService {
         console.log("thresholdMedium:", thresholdMedium)
         console.log("thresholdHigh:", thresholdHigh)
 
-        // default incentive level is "none". Adjust with the below if statements
+        // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the stations
+        const returnIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+        const returnIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
+        const returnIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
+        const returnIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+
+        // Default incentive level is "none". Adjust with the below if statements
         let returnIncentiveLevelID = returnIncentiveLevelNoneID
         let returnIncentiveLevelName = "none" // This variable is just for logging purposes
 
@@ -85,23 +83,33 @@ class BikeService extends cds.ApplicationService {
         // *** Start of redistribution logic ***
 
         // Determine how many bikes are available in this station
-        // TODO: prüfen ob bikesAvailable dann überhaupt nötig ist
         let bikesCount = await SELECT.from(Bikes).where({ currentStation_ID: event.data.stationID, status: 'stationed' }).columns('count(1) as count')
         bikesCount = bikesCount[0].count
         console.log("bikesCount:", bikesCount)
 
-        // Check if redistribution is triggered
+        // Define relative and absolute threshold to check if the redistribution logic is triggered
+        const redistrThresholdAbs = 5
+        const redistrThresholdRel = 0.2
+
+        // Redistribution is triggered when there are either <= 5 bikes in the station or <= 20% of the station's max capacity 
         if (bikesCount <= redistrThresholdAbs || bikesCount <= station.maxCapacity * redistrThresholdRel) {
           console.log("*** Redistribution Logic is triggered ***")
 
           // Step 1: Determine how many bikes should be redistributed to this station
-          // The station should have at least 6 bikes or 40% of its max Capacity after redistribution
-          const numOfBikesToRedistribute = Math.max(6, Math.ceil(station.maxCapacity * 0.4)) - bikesCount
+          // Define constants for how many bikes should be redistributed. We decided to redistribute either 5 bikes or so many that the station gets "filled up" to 40% of its max capacity
+          const minBikesToRedistribute = 5
+          const fillUpPercentage = 0.4
+          // Determine how many bikes are "missing" in the station to reach 40% of max capacity
+          const missingBikes = Math.ceil(station.maxCapacity * fillUpPercentage)- bikesCount
+
+          // Pick whatever of the two options is higher
+          const numOfBikesToRedistribute = Math.max(minBikesToRedistribute, missingBikes)
           console.log("numOfBikesToRedistribute:", numOfBikesToRedistribute)
 
           // Step 2: Determine all stations from which we can possibly transfer bikes to our target station
           // Condition: After redistribution, at least 5 bikes or 20% of max Capcity should be left over
           // TODO: checken ob Syntax stimmt
+          // TODO theoretisch müssten da sim text unten noch variablen werden
           const candidateStations = await SELECT.from(Stations)
             .where("ID !=", event.data.stationID)
             .and(
@@ -170,6 +178,8 @@ class BikeService extends cds.ApplicationService {
             })
             console.log("taskItem created:", taskItem)
           }
+        } else {
+          console.log("Redistribution logic was not triggered. There are sufficient bikes in the station.")
         }
         // *** End of redistribution logic ***
       } else {
