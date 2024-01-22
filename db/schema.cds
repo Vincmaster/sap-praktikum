@@ -53,7 +53,7 @@ entity TaskStatus : CodeList {
 }
 
 entity Workers : cuid, managed {
-    name : String(20);
+    name : String(128);
     email : String(128);
     tasks : Association to many RedistributionTasks on tasks.assignedWorker = $self;
 }
