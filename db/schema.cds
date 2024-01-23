@@ -26,6 +26,7 @@ entity Stations : cuid, managed {
     returnIncentiveLevel : Association to Incentives;
     rentIncentiveLevel : Association to Incentives;
     pointLocation : hana.ST_POINT;
+    mockedPointLocation: Int32;
 }
 
 entity Incentives : cuid, managed {
