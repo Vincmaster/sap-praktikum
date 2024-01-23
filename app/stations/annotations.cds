@@ -112,30 +112,34 @@ annotate service.Stations with @(
                 },
             ],
 
-    },
-    UI.LineItem #Bikes: [
+    },        
+);
+
+annotate service.Bikes with @(
+        UI.LineItem #Bikes: [
         {
             $Type : 'UI.DataField',
             Label : 'Bike Name',
-            Value : bikes.name,
+            Value : name,
         },
         {
             $Type : 'UI.DataField',
             Label : 'Bike Type',
-            Value : bikes.type,
+            Value : type,
         },
                 {
             $Type : 'UI.DataField',
             Label : 'Bike Status',
-            Value : bikes.status,
+            Value : status,
         },
         {
             $Type : 'UI.DataField',
             Label : 'Bike Kilometers',
-            Value : bikes.kilometers,
+            Value : kilometers,
         },
-    ],          
+    ],  
 );
+
 annotate service.Stations with @(
     UI.Facets : [
 
@@ -145,7 +149,7 @@ annotate service.Stations with @(
     },
     {
         $Type : 'UI.ReferenceFacet',
-        Target : '@UI.LineItem#Bikes',
+        Target : 'bikes/@UI.LineItem#Bikes',
     },
     
 ]

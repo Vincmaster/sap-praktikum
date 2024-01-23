@@ -43,7 +43,7 @@
   "sap.ui": {
     "technology": "UI5",
     "icons": {
-      "icon": "",
+      "icon": "sap-icon://SAP-icons-TNT/actor",
       "favIcon": "",
       "phone": "",
       "phone@2": "",
