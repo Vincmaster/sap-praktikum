@@ -32,3 +32,35 @@ mta_archives/
 
 # @cap-js/cds-typer
 @cds-models
+resources/
+app/dashboard/dist/Component-preload.js
+app/dashboard/dist/dashboard.zip
+app/dashboard/dist/sap-ui-cachebuster-info.json
+app/dashboard/dist/i18n/i18n_en.properties
+app/dashboard/dist/resources/sap-ui-version.json
+app/stations/dist/Component-dbg.js
+app/stations/dist/Component-preload.js
+app/stations/dist/Component.js
+app/stations/dist/index.html
+app/stations/dist/manifest.json
+app/stations/dist/sap-ui-cachebuster-info.json
+app/stations/dist/stations.zip
+app/stations/dist/i18n/i18n_en.properties
+app/stations/dist/i18n/i18n.properties
+app/taskslist/dist/Component-preload.js
+app/taskslist/dist/index.html
+app/taskslist/dist/sap-ui-cachebuster-info.json
+app/taskslist/dist/taskslist.zip
+app/taskslist/dist/i18n/i18n_en.properties
+app/taskslist/dist/resources/sap-ui-version.json
+app/taskslist/dist/Component-preload.js
+app/taskslist/dist/index.html
+app/taskslist/dist/sap-ui-cachebuster-info.json
+app/taskslist/dist/resources/sap-ui-version.json
+app/dashboard/dist/Component-preload.js
+app/dashboard/dist/sap-ui-cachebuster-info.json
+app/dashboard/dist/resources/sap-ui-version.json
+app/taskslist/dist/Component-preload.js
+app/taskslist/dist/index.html
+app/taskslist/dist/sap-ui-cachebuster-info.json
+app/taskslist/dist/resources/sap-ui-version.json
