@@ -1,5 +1,5 @@
 {
-    "headers": "dummy header",
+    "headers": {},
     "data": {
       "description": "A customer rented a bike.",
       "bikeID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01",
