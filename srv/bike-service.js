@@ -100,7 +100,7 @@ class BikeService extends cds.ApplicationService {
           const minBikesToRedistribute = 5
           const fillUpPercentage = 0.4
           // Determine how many bikes are "missing" in the station to reach 40% of max capacity
-          const missingBikes = Math.ceil(station.maxCapacity * fillUpPercentage)- bikesCount
+          const missingBikes = Math.ceil(station.maxCapacity * fillUpPercentage) - bikesCount
 
           // Pick whatever of the two options is higher
           const numOfBikesToRedistribute = Math.max(minBikesToRedistribute, missingBikes)
@@ -120,63 +120,108 @@ class BikeService extends cds.ApplicationService {
           // Step 3: For every station, calculate the distance to our target station
 
           // This will be an array ob objects. Each object will have 2 attributes: candidateStation and distance
-          const stationDistances = []
+          let stationDistances = []
+          let mockedStationDistances = []
 
           // We use this HANA specific key later on to access the numeric value of the distance object(s)
           const key = 'POINTLOCATION.ST_DISTANCE(ST_POINT(:1))'
+          let errorOcurred = false
+          const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(?)) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ?`
 
           for (const candidateStation of candidateStations) {
             console.log("Entering a new iteration of candidateStations loop ...")
+            console.log("current candidate station:", candidateStation.location)
 
-            const distanceQuery = `SELECT "POINTLOCATION".ST_DISTANCE(NEW ST_POINT(?)) FROM "IBIKE_DB_STATIONS" WHERE "ID" = ?`
-            const queryResult = await cds.run(distanceQuery, [station.pointLocation, candidateStation.ID])
-
-            // queryResult is an array that contains the distance (as an object)
-            const distance = queryResult[0]
-            console.log("distance (as an object):", distance)
-            console.log("distance (numeric value only):", distance[key])
-
-            stationDistances.push({ station, distance })
+            try {
+              const queryResult = await cds.run(distanceQuery, [station.pointLocation, candidateStation.ID])
+              // queryResult is an array that contains the distance (as an object)
+              const distance = queryResult[0]
+              console.log("distance (as an object):", distance)
+              console.log("distance (numeric value only):", distance[key])
+              stationDistances.push({ candidateStation, distance })
+            } catch (error) {
+              console.error("An error occured while using HANA spatial functionality.Proceed with mocked spatial data.")
+              const distance = Math.abs(station.mockedPointLocation - candidateStation.mockedPointLocation)
+              console.log("mocked distance:", distance)
+              mockedStationDistances.push({ candidateStation, distance })
+              errorOcurred = true
+            }
           }
-          console.log("stationDistances:", stationDistances)
 
-          // Step 4: Sort stations (smallest distance first)
-          stationDistances.sort((a, b) => a.distance[key] - b.distance[key])
-          console.log("stationDistances sorted:", stationDistances)
+          let nearestStation
+          if (!errorOcurred) {
+            console.log("stationDistances:", stationDistances)
+            // Step 4: Sort stations (smallest distance first)
+            stationDistances.sort((a, b) => a.distance[key] - b.distance[key])
+            console.log("stationDistances sorted:", stationDistances)
 
-          const nearestStation = stationDistances[0].station
-          console.log("nearestStation:", nearestStation.location, nearestStation.ID)
-          console.log("Distance to target station:", stationDistances[0].distance[key])
+            nearestStation = stationDistances[0].station
+            console.log("nearestStation:", nearestStation.location, nearestStation.ID)
+            console.log("Distance to target station:", stationDistances[0].distance[key])
+          }
+          else {
+            console.log("mockedStationDistances:", mockedStationDistances)
+            // To simplyfy the remaining code, assign the content of mcokedstationDistances to stationdistances
+            stationDistances = mockedStationDistances
+            console.log("Assigned the content of mockedStationDistances to stationDistances")
+            // Step 4: Sort stations (smallest distance first)
+            stationDistances.sort((a, b) => a.distance - b.distance)
+            console.log("stationDistances sorted:", stationDistances)
+
+            nearestStation = stationDistances[0].candidateStation
+            console.log("nearestStation:", nearestStation.location, nearestStation.ID)
+            console.log("Distance to target station:", stationDistances[0].distance)
+          }
+
+          console.log(numOfBikesToRedistribute, "will be redistributed from", nearestStation.location, "to" , station.location) // TODO noch testen
+
+
+
+
 
           // Step 5: Choose a worker randomly to assign him or her the redistribution task later on
+          // for the final presentation, wet set the variable "demo" to true to assign the task to a specific worker
+          // so we can control which worker gets assigned the task. This ensures a smooth presentation.
+          let demo = true
           const workers = await SELECT.from(Workers)
-          const worker = workers[Math.floor(Math.random() * workers.length)]
+          let worker
+          if (demo) {
+            worker = workers.find(worker => worker.name === "a.heckl@hotmail.de")
+          }
+          else {
+            worker = workers[Math.floor(Math.random() * workers.length)]
+          }
           console.log("worker:", worker)
 
           // Step 5: Create Redistribution Task
           // TODO prüfen ob das Obejkt wirklich erzeugt wird nach insert
-          const redistributionTask = await INSERT.into(RedistributionTasks).entries({
-            status_code: "OPEN",
-            assignedWorker_ID: worker.ID,
-          })
-          console.log("redistributionTask:", redistributionTask)
-
-          // Step 6: Choose the bikes that should be transferred to target station (just take the first n ones, where n = numOfBikesToRedistribute)
-          const bikesToRedistribute = await SELECT.from(Bikes)
-            .where({ currentStation_ID: nearestStation.ID, status: "stationed" })
-            .limit(numOfBikesToRedistribute)
-          console.log("bikesToRedistribute:", bikesToRedistribute)
-
-          // Step 7: Create one task item for each bike
-          for (const bikeToRedistribute of bikesToRedistribute) {
-            console.log("Creating a new taskItem ...")
-            const taskItem = await INSERT.into(TaskItems).entries({
-              bike_ID: bikeToRedistribute.ID,
-              departure_ID: nearestStation.ID,
-              target_ID: station.ID,
-              task_ID: redistributionTask.ID,
+          // Only create a new redistribution task if there is currently no other active task for this station
+          if (station.redistributionActive) {
+            console.log("There is already another active redistribution task for this station. Thus, no new task is created.")
+          } else {
+            const redistributionTask = await INSERT.into(RedistributionTasks).entries({
+              status_code: "OPEN",
+              assignedWorker_ID: worker.ID,
             })
-            console.log("taskItem created:", taskItem)
+            console.log("redistributionTask:", redistributionTask) // TODO weirder log HIER WEITERMACHEN AM SA
+
+            // Step 6: Choose the bikes that should be transferred to target station (just take the first n ones, where n = numOfBikesToRedistribute)
+            const bikesToRedistribute = await SELECT.from(Bikes)
+              .where({ currentStation_ID: nearestStation.ID, status: "stationed" })
+              .limit(numOfBikesToRedistribute)
+            console.log("bikesToRedistribute:", bikesToRedistribute)
+
+            // Step 7: Create one task item for each bike
+            for (const bikeToRedistribute of bikesToRedistribute) {
+              console.log("Creating a new taskItem ...")
+              const taskItem = await INSERT.into(TaskItems).entries({
+                bike_ID: bikeToRedistribute.ID,
+                departure_ID: nearestStation.ID,
+                target_ID: station.ID,
+                task_ID: redistributionTask.ID,
+              })
+              console.log("taskItem created:", taskItem)
+            }
           }
         } else {
           console.log("Redistribution logic was not triggered. There are sufficient bikes in the station.")
