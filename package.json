@@ -6,7 +6,7 @@
     "license": "UNLICENSED",
     "private": true,
     "dependencies": {
-        "@sap/cds": "^7",
+        "@sap/cds": "^7.5",
         "@sap/cds-hana": "^2",
         "@sap/hana-client": "^2.19.21",
         "@sap/xb-msg-amqp-v100": "^0.9.58",
@@ -34,7 +34,8 @@
     },
     "cds": {
         "features": {
-            "fiori_preview": true
+            "fiori_preview": true,
+            "odata_new_parser": true 
         },
         "requires": {
             "messaging": {
