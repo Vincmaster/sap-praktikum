@@ -178,7 +178,7 @@ class BikeService extends cds.ApplicationService {
           /* Step XX: Choose a worker randomly to assign him or her the redistribution task later on
              for the final presentation, wet set the variable "demo" to true to assign the task to a specific worker
              so we can control which worker gets assigned the task. This ensures a smooth presentation for our listeners. */
-          const demo = false
+          const demo = true
           
           const allWorkers = await SELECT.from(Workers)
           console.log("allWorkers:", allWorkers)

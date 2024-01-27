@@ -18,14 +18,9 @@ annotate service.RedistributionTasks with @(
         },
         {
             $Type: 'UI.DataFieldForAction',
-            Label: 'Start Task',
-            Action: 'WorkersService.startTask',
-    },
-        {
-            $Type: 'UI.DataFieldForAction',
-            Label: 'Finish Task',
+            Label: 'Change Taskstatus',
             Action: 'WorkersService.changeStatus',
-    },
+        },
     ]
 );
 
@@ -65,23 +60,6 @@ annotate service.RedistributionTasks with @(
 );
 
 annotate service.RedistributionTasks with @(
-    UI.Identification : [
-        {
-            $Type : 'UI.DataFieldForAction',
-            Action : 'WorkersService.startTask',
-            Label : 'Start Task',
-            Criticality : 0,
-        },
-                {
-            $Type : 'UI.DataFieldForAction',
-            Action : 'WorkersService.changeStatus',
-            Label : 'Finish Task',
-            Criticality : 0,
-        },
-    ]
-);
-
-annotate service.RedistributionTasks with @(
     UI.FieldGroup #Tasks : {
         $Type : 'UI.FieldGroupType',
             Data : [
@@ -113,9 +91,6 @@ annotate service.RedistributionTasks with @(
 );
 annotate service.RedistributionTasks actions {
     changeStatus @(
-        Common.SideEffects: {TargetEntities: ['/WorkersService.EntityContainer/RedistributionTasks']}
-    );
-    startTask @(
         Common.SideEffects: {TargetEntities: ['/WorkersService.EntityContainer/RedistributionTasks']}
     );
 };
