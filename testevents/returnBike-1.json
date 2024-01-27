@@ -1,10 +1,10 @@
 {
-    "headers": {},
-    "data": {
-      "description": "A customer returned a bike.",
-      "bikeID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01",
-      "stationID": "dddddddd-dddd-dddd-dddd-dddddddddd01",
-      "date": "23.01.2024",
-      "number": "1"
-    }
+  "headers": {},
+  "data": {
+    "description": "A customer returned a bike.",
+    "bikeID": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01",
+    "stationID": "dddddddd-dddd-dddd-dddd-dddddddddd01",
+    "date": "23.01.2024",
+    "counter": "1"
   }
+}

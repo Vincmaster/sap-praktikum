@@ -91,11 +91,13 @@ class BikeService extends cds.ApplicationService {
         const redistrThresholdAbs = 5
         const redistrThresholdRel = 0.2
 
-        // Redistribution is triggered when there are either <= 5 bikes in the station or <= 20% of the station's max capacity 
-        if (bikesCount <= redistrThresholdAbs || bikesCount <= station.maxCapacity * redistrThresholdRel) {
+        // Redistribution is triggered when there are either <= 5 bikes in the station or <= 20% of the station's max capacity
+        let thresholdMet = bikesCount <= redistrThresholdAbs || bikesCount <= station.maxCapacity * redistrThresholdRel
+        // Additionally, we want to have only 1 active redistribution task at a time
+        if (thresholdMet && !(station.redistributionActive)) {
           console.log("*** Redistribution Logic is triggered ***")
 
-          // Step 1: Determine how many bikes should be redistributed to this station
+          // Step XX: Determine how many bikes should be redistributed to this station
           // Define constants for how many bikes should be redistributed. We decided to redistribute either 5 bikes or so many that the station gets "filled up" to 40% of its max capacity
           const minBikesToRedistribute = 5
           const fillUpPercentage = 0.4
@@ -106,18 +108,16 @@ class BikeService extends cds.ApplicationService {
           const numOfBikesToRedistribute = Math.max(minBikesToRedistribute, missingBikes)
           console.log("numOfBikesToRedistribute:", numOfBikesToRedistribute)
 
-          // Step 2: Determine all stations from which we can possibly transfer bikes to our target station
-          // Condition: After redistribution, at least 5 bikes or 20% of max Capcity should be left over
-          // TODO: checken ob Syntax stimmt
-          // TODO theoretisch müssten da sim text unten noch variablen werden
+          // Step XX: Determine all stations from which we can possibly transfer bikes to our target station, such that no new redistribution task would be triggered in these stations when we take away bikes from them.
+          // --> Condition: After redistribution, at least 5 bikes and 20% of max Capcity should be left over
           const candidateStations = await SELECT.from(Stations)
             .where("ID !=", event.data.stationID)
             .and(
-              `bikesAvailable - ${numOfBikesToRedistribute} > 5 OR bikesAvailable - ${numOfBikesToRedistribute} > maxCapacity * 0.2`
+              `bikesAvailable - ${numOfBikesToRedistribute} > ${redistrThresholdAbs} AND bikesAvailable - ${numOfBikesToRedistribute} > maxCapacity * ${redistrThresholdRel}`
             )
           console.log("candidateStations:", candidateStations)
 
-          // Step 3: For every station, calculate the distance to our target station
+          // Step XX: For every station, calculate the distance to our target station
 
           // This will be an array ob objects. Each object will have 2 attributes: candidateStation and distance
           let stationDistances = []
@@ -151,7 +151,7 @@ class BikeService extends cds.ApplicationService {
           let nearestStation
           if (!errorOcurred) {
             console.log("stationDistances:", stationDistances)
-            // Step 4: Sort stations (smallest distance first)
+            // Step XX: Sort stations (smallest distance first)
             stationDistances.sort((a, b) => a.distance[key] - b.distance[key])
             console.log("stationDistances sorted:", stationDistances)
 
@@ -164,7 +164,7 @@ class BikeService extends cds.ApplicationService {
             // To simplyfy the remaining code, assign the content of mcokedstationDistances to stationdistances
             stationDistances = mockedStationDistances
             console.log("Assigned the content of mockedStationDistances to stationDistances")
-            // Step 4: Sort stations (smallest distance first)
+            // Step XX: Sort stations (smallest distance first)
             stationDistances.sort((a, b) => a.distance - b.distance)
             console.log("stationDistances sorted:", stationDistances)
 
@@ -173,15 +173,11 @@ class BikeService extends cds.ApplicationService {
             console.log("Distance to target station:", stationDistances[0].distance)
           }
 
-          console.log(numOfBikesToRedistribute, "will be redistributed from", nearestStation.location, "to" , station.location) // TODO noch testen
+          console.log(numOfBikesToRedistribute, "bikes will be redistributed from", nearestStation.location, "to", station.location)
 
-
-
-
-
-          // Step 5: Choose a worker randomly to assign him or her the redistribution task later on
-          // for the final presentation, wet set the variable "demo" to true to assign the task to a specific worker
-          // so we can control which worker gets assigned the task. This ensures a smooth presentation.
+          /* Step XX: Choose a worker randomly to assign him or her the redistribution task later on
+             for the final presentation, wet set the variable "demo" to true to assign the task to a specific worker
+             so we can control which worker gets assigned the task. This ensures a smooth presentation for our listeners. */
           let demo = true
           const workers = await SELECT.from(Workers)
           let worker
@@ -193,38 +189,47 @@ class BikeService extends cds.ApplicationService {
           }
           console.log("worker:", worker)
 
-          // Step 5: Create Redistribution Task
-          // TODO prüfen ob das Obejkt wirklich erzeugt wird nach insert
-          // Only create a new redistribution task if there is currently no other active task for this station
-          if (station.redistributionActive) {
-            console.log("There is already another active redistribution task for this station. Thus, no new task is created.")
-          } else {
-            const redistributionTask = await INSERT.into(RedistributionTasks).entries({
-              status_code: "OPEN",
-              assignedWorker_ID: worker.ID,
+          // Step XX: Create a new redistribution task
+          const redistributionTask = await INSERT.into(RedistributionTasks).entries({
+            status_code: "OPEN",
+            assignedWorker_ID: worker.ID,
+          })
+          console.log("A new redistribution task with the following ID was created:", redistributionTask.results[0].values[2])
+
+          // Step XX: Set redistributionActive to true to avoid having multiple tasks for the same station at the same time
+          await UPDATE(Stations).set({ redistributionActive: true }).where({ ID: station.ID })
+          console.log("redistributionActive was set to true.")
+
+          // Step XX: Choose the bikes that should be transferred to target station (just take the first n ones, where n = numOfBikesToRedistribute)
+          const bikesToRedistribute = await SELECT.from(Bikes)
+            .where({ currentStation_ID: nearestStation.ID, status: "stationed" })
+            .limit(numOfBikesToRedistribute)
+          console.log("bikesToRedistribute:", bikesToRedistribute)
+
+          // Step XX: Create one task item for each bike
+          let i = 1
+          for (const bikeToRedistribute of bikesToRedistribute) {
+            console.log(`Creating a new taskItem for the ${i}. bike that should be redistributed ...`)
+            const taskItem = await INSERT.into(TaskItems).entries({
+              bike_ID: bikeToRedistribute.ID,
+              departure_ID: nearestStation.ID,
+              target_ID: station.ID,
+              task_ID: redistributionTask.results[0].values[2],
             })
-            console.log("redistributionTask:", redistributionTask) // TODO weirder log HIER WEITERMACHEN AM SA
+            console.log("taskItem created:", taskItem.results[0].values)
 
-            // Step 6: Choose the bikes that should be transferred to target station (just take the first n ones, where n = numOfBikesToRedistribute)
-            const bikesToRedistribute = await SELECT.from(Bikes)
-              .where({ currentStation_ID: nearestStation.ID, status: "stationed" })
-              .limit(numOfBikesToRedistribute)
-            console.log("bikesToRedistribute:", bikesToRedistribute)
+            // Set the status of the bike to "reservedForRedis" such that the customers cannot rent it
+            await UPDATE(Bikes)
+              .set({ status: "reservedForRedis" })
+              .where({ ID: bikeToRedistribute.ID })
 
-            // Step 7: Create one task item for each bike
-            for (const bikeToRedistribute of bikesToRedistribute) {
-              console.log("Creating a new taskItem ...")
-              const taskItem = await INSERT.into(TaskItems).entries({
-                bike_ID: bikeToRedistribute.ID,
-                departure_ID: nearestStation.ID,
-                target_ID: station.ID,
-                task_ID: redistributionTask.ID,
-              })
-              console.log("taskItem created:", taskItem)
-            }
+              await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: bikeToRedistribute.currentStation_ID })
+
+            i++
           }
+          console.log("Finished creating a task item for each bike to be redistributed.")
         } else {
-          console.log("Redistribution logic was not triggered. There are sufficient bikes in the station.")
+          console.log("Redistribution logic was not triggered. The threshold was not met and/or there is already another active redistribution task for this station.")
         }
         // *** End of redistribution logic ***
       } else {
@@ -266,7 +271,6 @@ class BikeService extends cds.ApplicationService {
       const bikeIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
       const bikeIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
 
-      // Simulate driven kilometers, set status to "stationed", set new station for the bike and increment bikesAvailable in Stations table
       if (bike && station) {
         // Generate a random number between 1 and 50 for simulating kilometers driven by the customer
         const drivenKilometers = Math.floor(Math.random() * 50) + 1
@@ -341,19 +345,19 @@ class BikeService extends cds.ApplicationService {
         The 25% of bikes with the least kilometers get the incentive level "high".
          */
 
-        // Step 1: Find all bikes in the station where the customer returned the bike.
+        // Step XX: Find all bikes in the station where the customer returned the bike.
         const bikesInStation = await SELECT.from(Bikes).where({ currentStation_ID: event.data.stationID })
         console.log("bikesInStation:", bikesInStation)
 
-        // Step 2: Sort the bikes by kilometers in descending order.
+        // Step XX: Sort the bikes by kilometers in descending order.
         const sortedBikes = bikesInStation.slice().sort((a, b) => b.kilometers - a.kilometers)
         console.log("sortedBikes:", sortedBikes)
 
-        // Step 3: Calculate the number of bikes in each partition. We partiton the list of bikes into four parts (25% of bikes each) for the four incentive levels (none, low, medium and high).
+        // Step XX: Calculate the number of bikes in each partition. We partition the list of bikes into four parts (25% of bikes each) for the four incentive levels (none, low, medium and high).
         const partitionSize = Math.floor(sortedBikes.length / 4)
         console.log("partitionSize:", partitionSize)
 
-        // Step 4: Set incentive levels relatively based on kilometers as described above.
+        // Step XX: Set incentive levels relatively based on kilometers as described above.
         console.log("Start looping through sortedBikes ...")
         for (let i = 0; i < sortedBikes.length; i++) {
           console.log("Start iteration number", i)
@@ -369,7 +373,7 @@ class BikeService extends cds.ApplicationService {
           }
           console.log("Bike Nr", i, "has bikeIncentiveLevelID", bikeIncentiveLevelID, ".")
 
-          // Step 5: Update the incentive level for the bike in the database.
+          // Step XX: Update the incentive level for the bike in the database.
           await UPDATE(Bikes).set({ incentiveLevel_ID: bikeIncentiveLevelID }).where({ ID: sortedBikes[i].ID })
           console.log("Finished iteration number", i)
         }

@@ -1,3 +1,2 @@
 ID,createdAt,createdBy,modifiedAt,modifiedBy,bike_ID,departure_ID,target_ID,task_ID
-eeeeeeee-eeee-eeee-eeee-eeeeeeeeee01,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01,dddddddd-dddd-dddd-dddd-dddddddddd01,dddddddd-dddd-dddd-dddd-dddddddddd02,cccccccc-cccc-cccc-cccc-cccccccccc01
 eeeeeeee-eeee-eeee-eeee-eeeeeeeeee02,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb02,dddddddd-dddd-dddd-dddd-dddddddddd01,dddddddd-dddd-dddd-dddd-dddddddddd02,cccccccc-cccc-cccc-cccc-cccccccccc04
