@@ -178,21 +178,50 @@ class BikeService extends cds.ApplicationService {
           /* Step XX: Choose a worker randomly to assign him or her the redistribution task later on
              for the final presentation, wet set the variable "demo" to true to assign the task to a specific worker
              so we can control which worker gets assigned the task. This ensures a smooth presentation for our listeners. */
-          let demo = true
-          const workers = await SELECT.from(Workers)
-          let worker
+          const demo = false
+          
+          const allWorkers = await SELECT.from(Workers)
+          console.log("allWorkers:", allWorkers)
+
+          let chosenWorker
+          
           if (demo) {
-            worker = workers.find(worker => worker.name === "a.heckl@hotmail.de")
+            chosenWorker = allWorkers.find(worker => worker.name === "a.heckl@hotmail.de")
           }
           else {
-            worker = workers[Math.floor(Math.random() * workers.length)]
+            const busyWorkersIDs = await SELECT.from(RedistributionTasks)
+              .columns('assignedWorker_ID')
+              .where({ status_code: 'OPEN' })
+              .or({ status_code: 'IN_PROGRESS' })
+            console.log("busyWorkersIDs:", busyWorkersIDs)
+  
+            // Extract IDs from busyWorkersIDs
+            const busyWorkerIdList = busyWorkersIDs.map(worker => worker.assignedWorker_ID);
+            console.log("busyWorkerIdList:", busyWorkerIdList)
+  
+            // Filter allWorkers to exclude busy workers
+            const nonBusyWorkers = allWorkers.filter(worker => !busyWorkerIdList.includes(worker.ID));
+            console.log("Available Workers:", nonBusyWorkers);
+  
+            // If all workers are busy, choose one randomly from all the workers
+            // else, choose one randomly from the non-busy workers     
+            if (nonBusyWorkers.length === 0) {
+              chosenWorker = allWorkers[Math.floor(Math.random() * allWorkers.length)]
+            } else {
+              chosenWorker = nonBusyWorkers[Math.floor(Math.random() * nonBusyWorkers.length)]
+            }
+            console.log("chosenWorker:", chosenWorker)
           }
-          console.log("worker:", worker)
+
+          
+
+
+
 
           // Step XX: Create a new redistribution task
           const redistributionTask = await INSERT.into(RedistributionTasks).entries({
             status_code: "OPEN",
-            assignedWorker_ID: worker.ID,
+            assignedWorker_ID: chosenWorker.ID,
           })
           console.log("A new redistribution task with the following ID was created:", redistributionTask.results[0].values[2])
 
@@ -223,7 +252,7 @@ class BikeService extends cds.ApplicationService {
               .set({ status: "reservedForRedis" })
               .where({ ID: bikeToRedistribute.ID })
 
-              await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: bikeToRedistribute.currentStation_ID })
+            await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: bikeToRedistribute.currentStation_ID })
 
             i++
           }
