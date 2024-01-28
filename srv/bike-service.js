@@ -61,13 +61,13 @@ class BikeService extends cds.ApplicationService {
         let returnIncentiveLevelID = returnIncentiveLevelNoneID
         let returnIncentiveLevelName = "none" // This variable is just for logging purposes
 
-        if (station.bikesAvailable-1 <= thresholdHigh) {
+        if (station.bikesAvailable - 1 <= thresholdHigh) {
           returnIncentiveLevelID = returnIncentiveLevelHighID
           returnIncentiveLevelName = "high"
-        } else if (station.bikesAvailable-1 <= thresholdMedium) {
+        } else if (station.bikesAvailable - 1 <= thresholdMedium) {
           returnIncentiveLevelID = returnIncentiveLevelMediumID
           returnIncentiveLevelName = "medium"
-        } else if (station.bikesAvailable-1 <= thresholdLow) {
+        } else if (station.bikesAvailable - 1 <= thresholdLow) {
           returnIncentiveLevelID = returnIncentiveLevelLowID
           returnIncentiveLevelName = "low"
         }
@@ -334,13 +334,13 @@ class BikeService extends cds.ApplicationService {
         let rentIncentiveLevelID = rentIncentiveLevelNoneID
         let rentIncentiveLevelName = "none" // This variable is just for logging purposes
 
-        if (station.bikesAvailable >= thresholdHigh) {
+        if (station.bikesAvailable + 1 >= thresholdHigh) {
           rentIncentiveLevelID = rentIncentiveLevelHighID
           rentIncentiveLevelName = "high"
-        } else if (station.bikesAvailable >= thresholdMedium) {
+        } else if (station.bikesAvailable + 1 >= thresholdMedium) {
           rentIncentiveLevelID = rentIncentiveLevelMediumID
           rentIncentiveLevelName = "medium"
-        } else if (station.bikesAvailable >= thresholdLow) {
+        } else if (station.bikesAvailable + 1 >= thresholdLow) {
           rentIncentiveLevelID = rentIncentiveLevelLowID
           rentIncentiveLevelName = "low"
         }
@@ -357,7 +357,7 @@ class BikeService extends cds.ApplicationService {
 
         /*
         Overview of the incentive logic on bike level:
-        In the above code, we assigned the givens tation an incentive level. The goal was to avoid that stations do not run out of bikes.
+        In the above code, we assigned the given station an incentive level. The goal was to avoid that stations run out of bikes.
         Now, our next goal is to achieve an even utilization of the bikes to reduce overall maintenance costs.
         Thus, we want to incentivize customers to rent bikes with few kilometers instead of bikes with many kilometers.
         To achieve this, we assign each bike an incentive level.
@@ -368,7 +368,7 @@ class BikeService extends cds.ApplicationService {
         The 25% of bikes with the least kilometers get the incentive level "high".
          */
 
-        // Step XX: Find all bikes in the station where the customer returned the bike.
+        // Step XX: Find all bikes at the station where the customer returned the bike.
         const bikesInStation = await SELECT.from(Bikes).where({ currentStation_ID: event.data.stationID })
         console.log("bikesInStation:", bikesInStation)
 
@@ -401,6 +401,8 @@ class BikeService extends cds.ApplicationService {
           console.log("Finished iteration number", i)
         }
         console.log("Finished looping through sortedBikes.")
+
+        // *** End of incentive logic on bike level ***
       } else {
         if (!bike) {
           console.log("No bike found with ID:", event.data.bikeID);
@@ -412,7 +414,6 @@ class BikeService extends cds.ApplicationService {
 
         console.log("Event cannot be handled as bike and/or station could not be found in the database.");
       }
-      // *** End of incentive logic on bike level ***
       console.log("*** Bike return event handling finished. ***")
     })
 
