@@ -31,8 +31,6 @@ class WorkersService extends cds.ApplicationService {
            and set the target station as its new station 
            and increase bikesAvailable of the corresponding station by 1. */
         for (const taskItem of taskItems) {
-          console.log("Entering a new iteration of taskItems loop ...")
-
           await UPDATE(Bikes)
             .set({ status: "stationed", currentStation_ID: taskItem.target_ID })
             .where({ ID: taskItem.bike_ID })
