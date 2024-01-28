@@ -102,13 +102,18 @@ annotate service.Stations with @(
                 },
                 {
                     $Type : 'UI.DataField',
-                    Label : 'Rent Discount-Rate',
-                    Value : rentIncentiveLevel.discountRate,
+                    Label : 'Rent Incentive Level',
+                    Value : rentIncentiveLevel.level,
                 },
                 {
                     $Type : 'UI.DataField',
-                    Label : 'Return Discount-Rate',
-                    Value : returnIncentiveLevel.discountRate,
+                    Label : 'Return Incentive Level',
+                    Value : returnIncentiveLevel.level,
+                },
+                {
+                    $Type : 'UI.DataField',
+                    Label : 'Redistribution ongoing',
+                    Value : redistributionActive,
                 },
             ],
 
@@ -136,6 +141,21 @@ annotate service.Bikes with @(
             $Type : 'UI.DataField',
             Label : 'Bike Kilometers',
             Value : kilometers,
+        },
+        {
+            $Type : 'UI.DataField',
+            Label : 'Bike Incentive Level',
+            Value : incentiveLevel.level,
+        },
+                {
+            $Type : 'UI.DataField',
+            Label : 'Discount Rate',
+            Value : incentiveLevel.discountRate,
+        },
+                {
+            $Type : 'UI.DataField',
+            Label : 'Bonus Minutes',
+            Value : incentiveLevel.bonusMinutes,
         },
     ],  
 );
