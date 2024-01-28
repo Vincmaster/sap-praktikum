@@ -32,7 +32,7 @@ class BikeService extends cds.ApplicationService {
         Thus, we want to incentivize customers to rent bikes from stations with many bikes available rather than from stations with only few bikes.
         When a customer rents a bike, there is 1 bike less in the station. 
         Thus, there now may are too few bikes and we might have to increase the incentive to return bikes to this station.
-        To this end, we define the following thresholds for the respective incentive levels (none, low, meidum and high):
+        To this end, we define the following thresholds for the respective incentive levels (none, low, medium and high):
         1) more than 40% of max capacity available --> incentive level "none"
         2) between 40% and 20% of max capacity available --> incentive level "low"
         3) between 20% and 10% of max capacity available --> incentive level "medium"
@@ -61,13 +61,13 @@ class BikeService extends cds.ApplicationService {
         let returnIncentiveLevelID = returnIncentiveLevelNoneID
         let returnIncentiveLevelName = "none" // This variable is just for logging purposes
 
-        if (station.bikesAvailable <= thresholdHigh) {
+        if (station.bikesAvailable-1 <= thresholdHigh) {
           returnIncentiveLevelID = returnIncentiveLevelHighID
           returnIncentiveLevelName = "high"
-        } else if (station.bikesAvailable <= thresholdMedium) {
+        } else if (station.bikesAvailable-1 <= thresholdMedium) {
           returnIncentiveLevelID = returnIncentiveLevelMediumID
           returnIncentiveLevelName = "medium"
-        } else if (station.bikesAvailable <= thresholdLow) {
+        } else if (station.bikesAvailable-1 <= thresholdLow) {
           returnIncentiveLevelID = returnIncentiveLevelLowID
           returnIncentiveLevelName = "low"
         }
@@ -118,7 +118,6 @@ class BikeService extends cds.ApplicationService {
           console.log("candidateStations:", candidateStations)
 
           // Step XX: For every station, calculate the distance to our target station
-
           // This will be an array ob objects. Each object will have 2 attributes: candidateStation and distance
           let stationDistances = []
           let mockedStationDistances = []
@@ -179,12 +178,12 @@ class BikeService extends cds.ApplicationService {
              for the final presentation, wet set the variable "demo" to true to assign the task to a specific worker
              so we can control which worker gets assigned the task. This ensures a smooth presentation for our listeners. */
           const demo = true
-          
+
           const allWorkers = await SELECT.from(Workers)
           console.log("allWorkers:", allWorkers)
 
           let chosenWorker
-          
+
           if (demo) {
             chosenWorker = allWorkers.find(worker => worker.name === "a.heckl@hotmail.de")
           }
@@ -194,15 +193,15 @@ class BikeService extends cds.ApplicationService {
               .where({ status_code: 'OPEN' })
               .or({ status_code: 'IN_PROGRESS' })
             console.log("busyWorkersIDs:", busyWorkersIDs)
-  
+
             // Extract IDs from busyWorkersIDs
             const busyWorkerIdList = busyWorkersIDs.map(worker => worker.assignedWorker_ID);
             console.log("busyWorkerIdList:", busyWorkerIdList)
-  
+
             // Filter allWorkers to exclude busy workers
             const nonBusyWorkers = allWorkers.filter(worker => !busyWorkerIdList.includes(worker.ID));
             console.log("Available Workers:", nonBusyWorkers);
-  
+
             // If all workers are busy, choose one randomly from all the workers
             // else, choose one randomly from the non-busy workers     
             if (nonBusyWorkers.length === 0) {
@@ -212,11 +211,6 @@ class BikeService extends cds.ApplicationService {
             }
             console.log("chosenWorker:", chosenWorker)
           }
-
-          
-
-
-
 
           // Step XX: Create a new redistribution task
           const redistributionTask = await INSERT.into(RedistributionTasks).entries({
