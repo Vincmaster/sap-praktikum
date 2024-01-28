@@ -430,6 +430,7 @@ class BikeService extends cds.ApplicationService {
       // Case 1: A worker started working on a task
       if (event.data.oldStatus === "OPEN" && event.data.newStatus === "IN_PROGRESS") {
         console.log("Changing status from OPEN to IN_PROGRESS ...")
+        await UPDATE(RedistributionTasks).set({status_code: "IN_PROGRESS"}).where({ ID: event.data.taskID })
 
         /* For every task item (i.e., bike), set the status to "redistributing" such that it is not available for customers to rent
            and decrease bikesAvailable of the corresponding station by 1. */
@@ -442,6 +443,9 @@ class BikeService extends cds.ApplicationService {
         // Case 2: A worker finished the task
       } else if (event.data.oldStatus === "IN_PROGRESS" && event.data.newStatus === "DONE") {
         console.log("Changing status from IN_PROGRESS to DONE ...")
+        await UPDATE(RedistributionTasks).set({status_code: "DONE"}).where({ ID: event.data.taskID })
+        let targetID
+        
 
         /* For every task item (i.e., bike), set the status to "stationed" such that it is available for customers to rent it
            and set the target station as its new station 
@@ -450,11 +454,15 @@ class BikeService extends cds.ApplicationService {
           console.log("Entering a new iteration of taskItems loop ...")
 
           await UPDATE(Bikes)
-            .set({ status: "stationed", currentStation: taskItem.target_ID })
+            .set({ status: "stationed", currentStation_ID: taskItem.target_ID })
             .where({ ID: taskItem.bike_ID })
 
           await UPDATE(Stations).set("bikesAvailable = bikesAvailable + 1").where({ ID: taskItem.target_ID })
+
+          targetID = taskItem.target_ID
         }
+        await UPDATE(Stations).set({redistributionActive: false}).where({ ID: targetID })
+        
       }
       console.log("*** Taskstatus change event handling finished. ***")
     })
