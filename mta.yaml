@@ -51,6 +51,10 @@ modules:
       - stations.zip
       name: stations
       target-path: resources/
+    - artifacts:
+      - bikestations.zip
+      name: bikestations
+      target-path: resources/
 - name: taskslist
   type: html5
   path: app/taskslist
@@ -104,6 +108,16 @@ modules:
 - name: stations
   type: html5
   path: app/stations
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: bikestations
+  type: html5
+  path: app/bikestations
   build-parameters:
     build-result: dist
     builder: custom
