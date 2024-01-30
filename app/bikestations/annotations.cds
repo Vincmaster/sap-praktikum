@@ -136,12 +136,12 @@ annotate service.Bikes with @(
         },
                 {
             $Type : 'UI.DataField',
-            Label : 'Discount Rate',
+            Label : 'Bike Discount Rate',
             Value : incentiveLevel.discountRate,
         },
                 {
             $Type : 'UI.DataField',
-            Label : 'Bonus Minutes',
+            Label : 'Bike Bonus Minutes',
             Value : incentiveLevel.bonusMinutes,
         },
     ],  
