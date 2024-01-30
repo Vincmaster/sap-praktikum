@@ -1,6 +1,6 @@
 ID,createdAt,createdBy,modifiedAt,modifiedBy,name,type,price,status,currentStation_ID,kilometers,incentiveLevel_ID
-bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 01,Mountain Bike,50,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,731,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
-bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb02,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 02,Road Bike,70,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,207,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 01,Mountain Bike,50,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,100,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb02,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 02,Road Bike,70,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,200,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
 bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb03,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 03,City Bike,45,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,72,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
 bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb04,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 04,Hybrid Bike,60,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,237,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
 bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb05,2023-12-07T08:00:00Z,John Doe,2023-12-07T08:00:00Z,John Doe,Bike 05,Mountain Bike,50,stationed,dddddddd-dddd-dddd-dddd-dddddddddd01,66,aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1
