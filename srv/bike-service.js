@@ -1,6 +1,6 @@
 const cds = require("@sap/cds")
 const log = cds.log("ibike")
-const { updateReturnIncentiveLevel, updateRentIncentiveLevel, updateBikeIncentiveLevels } = require('./incentive-functions.js')
+const { updateRentIncentiveLevel, updateReturnIncentiveLevel, updateBikeIncentiveLevels } = require('./incentive-functions.js')
 
 class BikeService extends cds.ApplicationService {
   async init() {

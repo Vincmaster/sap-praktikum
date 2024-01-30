@@ -1,64 +1,5 @@
-async function updateReturnIncentiveLevel(station, Stations) {
-    /*
-    Overview of the return incentive logic on station level:
-    Our goal is to ensure that all stations have sufficient availability of bikes.
-    Thus, we want to incentivize customers to return bikes to stations with few bikes rather than to stations with many bikes.
-    When a customer rents a bike, there is 1 bike less in the station. 
-    Thus, there now may are too few bikes and we might have to increase the incentive to return bikes to this station.
-    To this end, we define the following thresholds for the respective incentive levels (none, low, medium and high):
-    1) more than 40% of max capacity available --> incentive level "none"
-    2) between 40% and 20% of max capacity available --> incentive level "low"
-    3) between 20% and 10% of max capacity available --> incentive level "medium"
-    4) between 10% and 0% of max capacity available --> incentive level "high"
-     */
-
-    // Define constants for the respective thresholds as just described
-    const thresholdLowPercentage = 0.4
-    const thresholdMediumPercentage = 0.2
-    const thresholdHighPercentage = 0.1
-
-    const thresholdLow = Math.floor(thresholdLowPercentage * station.maxCapacity)
-    const thresholdMedium = Math.floor(thresholdMediumPercentage * station.maxCapacity)
-    const thresholdHigh = Math.floor(thresholdHighPercentage * station.maxCapacity)
-    console.log("thresholdLow:", thresholdLow)
-    console.log("thresholdMedium:", thresholdMedium)
-    console.log("thresholdHigh:", thresholdHigh)
-
-    // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the stations
-    const returnIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
-    const returnIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
-    const returnIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
-    const returnIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
-
-    // Default incentive level is "none". Adjust with the below if statements
-    let returnIncentiveLevelID = returnIncentiveLevelNoneID
-    let returnIncentiveLevelName = "none" // This variable is just for logging purposes
-
-    if (station.bikesAvailable - 1 <= thresholdHigh) {
-        returnIncentiveLevelID = returnIncentiveLevelHighID
-        returnIncentiveLevelName = "high"
-    } else if (station.bikesAvailable - 1 <= thresholdMedium) {
-        returnIncentiveLevelID = returnIncentiveLevelMediumID
-        returnIncentiveLevelName = "medium"
-    } else if (station.bikesAvailable - 1 <= thresholdLow) {
-        returnIncentiveLevelID = returnIncentiveLevelLowID
-        returnIncentiveLevelName = "low"
-    }
-
-    console.log("returnIncentiveLevelName:", returnIncentiveLevelName)
-    console.log("returnIncentiveLevelID:", returnIncentiveLevelID)
-
-    // Update the incentive level in the database
-    try {
-        await UPDATE(Stations).set({ returnIncentiveLevel_ID: returnIncentiveLevelID }).where({ ID: station.ID })
-        console.log(`Return incentive level updated for station ID: ${station.ID}`)
-    } catch (error) {
-        console.error("Error updating return incentive level in database:", error)
-    }
-}
-
-
 async function updateRentIncentiveLevel(station, Stations) {
+    console.log("*** Start of rent incentive logic (on station level) ***")
     /*
     Overview of the rent incentive logic on station level:
     Our goal is to ensure that all stations have sufficient availability of bikes.
@@ -115,10 +56,77 @@ async function updateRentIncentiveLevel(station, Stations) {
     } catch (error) {
         console.error("Error updating rent incentive level in the database:", error)
     }
+
+    console.log("*** End of rent incentive logic (on station level) ***")
+}
+
+
+async function updateReturnIncentiveLevel(station, Stations) {
+    console.log("*** Start of return incentive logic (on station level) ***")
+    /*
+    Overview of the return incentive logic on station level:
+    Our goal is to ensure that all stations have sufficient availability of bikes.
+    Thus, we want to incentivize customers to return bikes to stations with few bikes rather than to stations with many bikes.
+    When a customer rents a bike, there is 1 bike less in the station. 
+    Thus, there now may are too few bikes and we might have to increase the incentive to return bikes to this station.
+    To this end, we define the following thresholds for the respective incentive levels (none, low, medium and high):
+    1) more than 40% of max capacity available --> incentive level "none"
+    2) between 40% and 20% of max capacity available --> incentive level "low"
+    3) between 20% and 10% of max capacity available --> incentive level "medium"
+    4) between 10% and 0% of max capacity available --> incentive level "high"
+     */
+
+    // Define constants for the respective thresholds as just described
+    const thresholdLowPercentage = 0.4
+    const thresholdMediumPercentage = 0.2
+    const thresholdHighPercentage = 0.1
+
+    const thresholdLow = Math.floor(thresholdLowPercentage * station.maxCapacity)
+    const thresholdMedium = Math.floor(thresholdMediumPercentage * station.maxCapacity)
+    const thresholdHigh = Math.floor(thresholdHighPercentage * station.maxCapacity)
+    console.log("thresholdLow:", thresholdLow)
+    console.log("thresholdMedium:", thresholdMedium)
+    console.log("thresholdHigh:", thresholdHigh)
+
+    // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the stations
+    const returnIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
+    const returnIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
+    const returnIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
+    const returnIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+
+    // Default incentive level is "none". Adjust with the below if statements
+    let returnIncentiveLevelID = returnIncentiveLevelNoneID
+    let returnIncentiveLevelName = "none" // This variable is just for logging purposes
+
+    if (station.bikesAvailable - 1 <= thresholdHigh) {
+        returnIncentiveLevelID = returnIncentiveLevelHighID
+        returnIncentiveLevelName = "high"
+    } else if (station.bikesAvailable - 1 <= thresholdMedium) {
+        returnIncentiveLevelID = returnIncentiveLevelMediumID
+        returnIncentiveLevelName = "medium"
+    } else if (station.bikesAvailable - 1 <= thresholdLow) {
+        returnIncentiveLevelID = returnIncentiveLevelLowID
+        returnIncentiveLevelName = "low"
+    }
+
+    console.log("returnIncentiveLevelName:", returnIncentiveLevelName)
+    console.log("returnIncentiveLevelID:", returnIncentiveLevelID)
+
+    // Update the incentive level in the database
+    try {
+        await UPDATE(Stations).set({ returnIncentiveLevel_ID: returnIncentiveLevelID }).where({ ID: station.ID })
+        console.log(`Return incentive level updated for station ID: ${station.ID}`)
+    } catch (error) {
+        console.error("Error updating return incentive level in database:", error)
+    }
+
+    console.log("*** End of return incentive logic (on station level) ***")
 }
 
 
 async function updateBikeIncentiveLevels(station, Bikes) {
+    console.log("*** Start of incentive logic on bike level ***")
+
     /*
     Overview of the incentive logic on bike level:
     In the above code, every station got assigned a return incentive level and a rent incentive level to achieve a even distribution of bikes among stations.
@@ -138,47 +146,53 @@ async function updateBikeIncentiveLevels(station, Bikes) {
     const bikeIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
     const bikeIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
 
-    // Find all bikes at the station where the customer returned the bike.
-    // Note that we explicitely do not filter the status of the bike
-    const bikesInStation = await SELECT.from(Bikes).where({ currentStation_ID: station.ID })
+    // Find all stationed bikes at the station where the customer returned the bike.
+    // Note that we explicitely do not update the incentive levels for bikes which are rented or part of an ongoing redistribution task
+    const bikesInStation = await SELECT.from(Bikes).where({ currentStation_ID: station.ID, status: "stationed" })
     console.log("bikesInStation:", bikesInStation)
 
-    // Sort the bikes by kilometers in descending order.
+    // Sort the bikes by kilometers in descending order
     const sortedBikes = bikesInStation.slice().sort((a, b) => b.kilometers - a.kilometers)
     console.log("sortedBikes:", sortedBikes)
 
-    // Calculate the number of bikes in each partition. We partition the list of bikes into four parts (25% of bikes each) for the four incentive levels (none, low, medium and high).
-    const partitionSize = Math.floor(sortedBikes.length / 4)
-    console.log("partitionSize:", partitionSize)
+    // Calculate the base size of each partition and the number of remaining elements
+    const basePartitionSize = Math.floor(sortedBikes.length / 4);
+    let remainingElements = sortedBikes.length % 4;
 
-    // Set incentive levels relatively based on kilometers as described above.
-    console.log("Start looping through sortedBikes ...")
-    for (let i = 0; i < sortedBikes.length; i++) {
-        console.log("Start iteration number", i)
-        let bikeIncentiveLevelID = bikeIncentiveLevelNoneID
-        if (i < partitionSize) {
-            bikeIncentiveLevelID = bikeIncentiveLevelNoneID
-        } else if (i < partitionSize * 2) {
-            bikeIncentiveLevelID = bikeIncentiveLevelLowID
-        } else if (i < partitionSize * 3) {
-            bikeIncentiveLevelID = bikeIncentiveLevelMediumID
-        } else {
-            bikeIncentiveLevelID = bikeIncentiveLevelHighID
-        }
-        console.log("Bike Nr", i, "has bikeIncentiveLevelID", bikeIncentiveLevelID, ".")
+    console.log("Start looping through partitions")
+    let startIndex = 0;
+    for (let i = 0; i < 4; i++) {
+        // Determine the size of this partition
+        let partitionSize = basePartitionSize + (remainingElements > 0 ? 1 : 0);
+        remainingElements--;
 
-        // Update the incentive level for the bike in the database.
-        try {
-            await UPDATE(Bikes).set({ incentiveLevel_ID: bikeIncentiveLevelID }).where({ ID: sortedBikes[i].ID })
-            console.log("Finished iteration number", i)
-        } catch (error) {
-            console.error("Error updating bike incentive level in database:", error)
+        // Determine the incentive level ID based on the partition
+        let bikeIncentiveLevelID;
+        switch (i) {
+            case 0: bikeIncentiveLevelID = bikeIncentiveLevelNoneID; break;
+            case 1: bikeIncentiveLevelID = bikeIncentiveLevelLowID; break;
+            case 2: bikeIncentiveLevelID = bikeIncentiveLevelMediumID; break;
+            case 3: bikeIncentiveLevelID = bikeIncentiveLevelHighID; break;
         }
+
+        // Update the incentive level for the bikes in this partition
+        for (let j = startIndex; j < startIndex + partitionSize; j++) {
+            console.log("Bike Nr", j, "has bikeIncentiveLevelID", bikeIncentiveLevelID, ".")
+
+            try {
+                await UPDATE(Bikes).set({ incentiveLevel_ID: bikeIncentiveLevelID }).where({ ID: sortedBikes[j].ID });
+                console.log("Finished updating bike", j);
+            } catch (error) {
+                console.error("Error updating bike incentive level in database:", error);
+            }
+        }
+
+        // Update the start index for the next partition
+        startIndex += partitionSize;
     }
-    console.log("Finished incentive logic on bike level.")
+    console.log("*** End of incentive logic on bike level ***")
 }
 
-
 module.exports = {
-    updateReturnIncentiveLevel, updateRentIncentiveLevel, updateBikeIncentiveLevels
+    updateRentIncentiveLevel, updateReturnIncentiveLevel, updateBikeIncentiveLevels
 }
