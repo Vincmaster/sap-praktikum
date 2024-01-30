@@ -146,9 +146,9 @@ async function updateBikeIncentiveLevels(station, Bikes) {
 
     // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the bikes
     const bikeIncentiveLevelNoneID = config.incentiveLevelIDs.none
-    const bikeIncentiveLevelLowID = config.incentiveLevelIDs.none
-    const bikeIncentiveLevelMediumID = config.incentiveLevelIDs.none
-    const bikeIncentiveLevelHighID = config.incentiveLevelIDs.none
+    const bikeIncentiveLevelLowID = config.incentiveLevelIDs.low
+    const bikeIncentiveLevelMediumID = config.incentiveLevelIDs.medium
+    const bikeIncentiveLevelHighID = config.incentiveLevelIDs.high
 
     // Find all stationed bikes at the station where the customer returned the bike.
     // Note that we explicitely do not update the incentive levels for bikes which are rented or part of an ongoing redistribution task
