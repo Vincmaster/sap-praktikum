@@ -24,7 +24,9 @@ service StationsService {
                 {Property: count},
                 {Property: bikesAvailable},
                 {Property: rentedCount},
-                {Property: stationedCount}
+                {Property: stationedCount},
+                {Property: reservedCount},
+                {Property: redistributingCount}
             ]
         }},
         Common.SemanticKey: [ID]
@@ -49,6 +51,24 @@ service StationsService {
         ) as stationedBikes
             on  stationedBikes.currentStation_ID = station.ID
             and stationedBikes.status            = 'stationed'
+        left join (
+            select
+            currentStation.ID as currentStation_ID,
+            status            as status,
+            count(ID)         as reservedCount    : Integer
+            from db.Bikes group by currentStation.ID, status
+        ) as reservedBikes
+            on  reservedBikes.currentStation_ID = station.ID
+            and reservedBikes.status            = 'reservedForRedis'
+        left join (
+            select
+            currentStation.ID as currentStation_ID,
+            status            as status,
+            count(ID)         as redistributingCount    : Integer
+            from db.Bikes group by currentStation.ID, status
+        ) as redistributingBikes
+            on  redistributingBikes.currentStation_ID = station.ID
+            and redistributingBikes.status            = 'redistributing'
         {
             station.ID,
             station.location,
@@ -69,6 +89,7 @@ service StationsService {
                 else
                     rentedBikes.rentedCount
             end               as rentedCount    : Integer @title: 'Rented Bikes',
+
             case
                 when
                     (
@@ -78,7 +99,28 @@ service StationsService {
                     0
                 else
                     stationedBikes.stationedCount
-            end               as stationedCount : Integer @title: 'Available Bikes'
+            end               as stationedCount : Integer @title: 'Available Bikes',
+
+            case
+                when
+                    (
+                        reservedBikes.reservedCount is null
+                    )
+                then
+                    0
+                else
+                    reservedBikes.reservedCount
+            end               as reservedCount    : Integer @title: 'Reserved Bikes',
+            case
+                when
+                    (
+                        redistributingBikes.redistributingCount is null
+                    )
+                then
+                    0
+                else
+                    redistributingBikes.redistributingCount
+            end               as redistributingCount    : Integer @title: 'Redistributing Bikes',
         };
 
     entity Workers    as projection on db.Workers;

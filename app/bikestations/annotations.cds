@@ -47,7 +47,8 @@ annotate service.Stations with @(
         Title          : 'Overview of Bike Stations',
         ChartType      : #Column,
         Dimensions     : [location, ],
-        DynamicMeasures: ['@Analytics.AggregatedProperty#numberofbikes', ],
+        DynamicMeasures: ['@Analytics.AggregatedProperty#numberofbikes', '@Analytics.AggregatedProperty#numberofstationedbikes',
+        '@Analytics.AggregatedProperty#numberofreservedbikes', '@Analytics.AggregatedProperty#numberofredistributingbikes' ],
     },
 
     Analytics.AggregatedProperty #numberofbikes         : {
@@ -69,6 +70,20 @@ annotate service.Stations with @(
         AggregationMethod   : 'sum',
         AggregatableProperty: stationedCount,
         ![@Common.Label]    : 'Number of Stationed Bikes'
+    },
+
+    Analytics.AggregatedProperty #numberofreservedbikes: {
+        Name                : 'NumberOfReservedBikes',
+        AggregationMethod   : 'sum',
+        AggregatableProperty: reservedCount,
+        ![@Common.Label]    : 'Number of Reserved Bikes'
+    },
+
+    Analytics.AggregatedProperty #numberofredistributingbikes: {
+        Name                : 'NumberOfRedistributingBikes',
+        AggregationMethod   : 'sum',
+        AggregatableProperty: redistributingCount,
+        ![@Common.Label]    : 'Number of Redistributing Bikes'
     },
 );
 
