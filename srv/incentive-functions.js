@@ -1,3 +1,5 @@
+const config = require('../config.json')
+
 async function updateRentIncentiveLevel(station, Stations) {
     console.log("*** Start of rent incentive logic (on station level) ***")
     /*
@@ -11,12 +13,13 @@ async function updateRentIncentiveLevel(station, Stations) {
     2) between 60% and 80% of max capacity available --> incentive level "low"
     3) between 80% and 90% of max capacity available --> incentive level "medium"
     4) between 90% and 100% of max capacity available --> incentive level "high"
+    These thresholds are defined in the configfile at the top level of the repository.
      */
 
     // Define constants for the respective thresholds as just described
-    const thresholdLowPercentage = 0.6
-    const thresholdMediumPercentage = 0.8
-    const thresholdHighPercentage = 0.9
+    const thresholdLowPercentage = config.rentIncentiveThresholds.lowPercentage
+    const thresholdMediumPercentage = config.rentIncentiveThresholds.mediumPercentage
+    const thresholdHighPercentage = config.rentIncentiveThresholds.highPercentage
 
     const thresholdLow = Math.floor(thresholdLowPercentage * station.maxCapacity)
     const thresholdMedium = Math.floor(thresholdMediumPercentage * station.maxCapacity)
@@ -26,10 +29,10 @@ async function updateRentIncentiveLevel(station, Stations) {
     console.log("thresholdHigh:", thresholdHigh)
 
     // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the stations
-    const rentIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
-    const rentIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
-    const rentIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
-    const rentIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+    const rentIncentiveLevelNoneID = config.incentiveLevelIDs.none
+    const rentIncentiveLevelLowID = config.incentiveLevelIDs.low
+    const rentIncentiveLevelMediumID = config.incentiveLevelIDs.medium
+    const rentIncentiveLevelHighID = config.incentiveLevelIDs.high
 
     // Default incentive level is "none". Adjust with the below if statements
     let rentIncentiveLevelID = rentIncentiveLevelNoneID
@@ -74,12 +77,13 @@ async function updateReturnIncentiveLevel(station, Stations) {
     2) between 40% and 20% of max capacity available --> incentive level "low"
     3) between 20% and 10% of max capacity available --> incentive level "medium"
     4) between 10% and 0% of max capacity available --> incentive level "high"
+    These thresholds are defined in the configfile at the top level of the repository.
      */
 
     // Define constants for the respective thresholds as just described
-    const thresholdLowPercentage = 0.4
-    const thresholdMediumPercentage = 0.2
-    const thresholdHighPercentage = 0.1
+    const thresholdLowPercentage = config.returnIncentiveThresholds.lowPercentage
+    const thresholdMediumPercentage = config.returnIncentiveThresholds.mediumPercentage
+    const thresholdHighPercentage = config.returnIncentiveThresholds.highPercentage
 
     const thresholdLow = Math.floor(thresholdLowPercentage * station.maxCapacity)
     const thresholdMedium = Math.floor(thresholdMediumPercentage * station.maxCapacity)
@@ -89,10 +93,10 @@ async function updateReturnIncentiveLevel(station, Stations) {
     console.log("thresholdHigh:", thresholdHigh)
 
     // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the stations
-    const returnIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
-    const returnIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
-    const returnIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
-    const returnIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+    const returnIncentiveLevelNoneID = config.incentiveLevelIDs.none
+    const returnIncentiveLevelLowID = config.incentiveLevelIDs.low
+    const returnIncentiveLevelMediumID = config.incentiveLevelIDs.medium
+    const returnIncentiveLevelHighID = config.incentiveLevelIDs.high
 
     // Default incentive level is "none". Adjust with the below if statements
     let returnIncentiveLevelID = returnIncentiveLevelNoneID
@@ -141,10 +145,10 @@ async function updateBikeIncentiveLevels(station, Bikes) {
      */
 
     // Define constants with the IDs (in hexadecimal HANA format) of the four possible incentive levels (none, low, medium and high) for the bikes
-    const bikeIncentiveLevelNoneID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"
-    const bikeIncentiveLevelLowID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
-    const bikeIncentiveLevelMediumID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
-    const bikeIncentiveLevelHighID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
+    const bikeIncentiveLevelNoneID = config.incentiveLevelIDs.none
+    const bikeIncentiveLevelLowID = config.incentiveLevelIDs.none
+    const bikeIncentiveLevelMediumID = config.incentiveLevelIDs.none
+    const bikeIncentiveLevelHighID = config.incentiveLevelIDs.none
 
     // Find all stationed bikes at the station where the customer returned the bike.
     // Note that we explicitely do not update the incentive levels for bikes which are rented or part of an ongoing redistribution task
