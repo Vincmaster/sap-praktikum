@@ -156,18 +156,18 @@ async function updateBikeIncentiveLevels(station, Bikes) {
     console.log("sortedBikes:", sortedBikes)
 
     // Calculate the base size of each partition and the number of remaining elements
-    const basePartitionSize = Math.floor(sortedBikes.length / 4);
-    let remainingElements = sortedBikes.length % 4;
+    const basePartitionSize = Math.floor(sortedBikes.length / 4)
+    let remainingElements = sortedBikes.length % 4
 
     console.log("Start looping through partitions")
-    let startIndex = 0;
+    let startIndex = 0
     for (let i = 0; i < 4; i++) {
         // Determine the size of this partition
-        let partitionSize = basePartitionSize + (remainingElements > 0 ? 1 : 0);
-        remainingElements--;
+        let partitionSize = basePartitionSize + (remainingElements > 0 ? 1 : 0)
+        remainingElements--
 
         // Determine the incentive level ID based on the partition
-        let bikeIncentiveLevelID;
+        let bikeIncentiveLevelID
         switch (i) {
             case 0: bikeIncentiveLevelID = bikeIncentiveLevelNoneID; break;
             case 1: bikeIncentiveLevelID = bikeIncentiveLevelLowID; break;
@@ -180,15 +180,15 @@ async function updateBikeIncentiveLevels(station, Bikes) {
             console.log("Bike Nr", j, "has bikeIncentiveLevelID", bikeIncentiveLevelID, ".")
 
             try {
-                await UPDATE(Bikes).set({ incentiveLevel_ID: bikeIncentiveLevelID }).where({ ID: sortedBikes[j].ID });
-                console.log("Finished updating bike", j);
+                await UPDATE(Bikes).set({ incentiveLevel_ID: bikeIncentiveLevelID }).where({ ID: sortedBikes[j].ID })
+                console.log("Finished updating bike", j)
             } catch (error) {
-                console.error("Error updating bike incentive level in database:", error);
+                console.error("Error updating bike incentive level in database:", error)
             }
         }
 
         // Update the start index for the next partition
-        startIndex += partitionSize;
+        startIndex += partitionSize
     }
     console.log("*** End of incentive logic on bike level ***")
 }
