@@ -38,7 +38,7 @@ service DashboardService {
         *, 
         1 as count: Integer
     };
-    entity Workers as select from db.Workers;
-    entity LowStations as select from db.Stations where bikesAvailable < 10; 
-    //entity TasksPerWorker as select from RedistributionTask groupby assignedWorker_ID, status_code
+    entity Workers as projection on db.Workers;
+    entity TaskItems as projection on db.TaskItems;
+    entity Bikes as projection on db.Bikes;
 }

@@ -19,7 +19,7 @@ entity Bikes : cuid, managed {
 }
 
 entity Stations : cuid, managed {
-    location : String(128) not null @mandatory;
+    location : String(128) not null @mandatory @title: 'Location';
     maxCapacity : Int32;
     bikesAvailable : Int32;
     bikes : Association to many Bikes on bikes.currentStation = $self;
@@ -45,8 +45,8 @@ entity TaskItems : cuid, managed {
 }
 
 entity RedistributionTasks : cuid, managed {
-    status : Association to TaskStatus;
-    assignedWorker : Association to Workers;
+    status : Association to TaskStatus @title: 'Status';
+    assignedWorker : Association to Workers @title: 'Assigned Worker';
     taskItems : Association to many TaskItems on taskItems.task = $self;
 }
 

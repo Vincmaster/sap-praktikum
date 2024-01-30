@@ -42,7 +42,7 @@
   "sap.ui": {
     "technology": "UI5",
     "icons": {
-      "icon": "",
+      "icon": "sap-icon://addresses",
       "favIcon": "",
       "phone": "",
       "phone@2": "",

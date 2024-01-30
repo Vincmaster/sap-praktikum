@@ -1,7 +1,7 @@
 {
     "_version": "1.59.0",
     "sap.app": {
-        "id": "taskslist",
+        "id": "bikestations",
         "type": "application",
         "i18n": "i18n/i18n.properties",
         "applicationVersion": {
@@ -11,26 +11,25 @@
         "description": "{{appDescription}}",
         "resources": "resources.json",
         "sourceTemplate": {
-            "id": "@sap/generator-fiori:worklist",
-            "version": "1.12.1",
-            "toolsId": "bf6c281f-f3c7-40b4-86ed-a3f991482377"
+            "id": "@sap/generator-fiori:lrop",
+            "version": "1.12.2",
+            "toolsId": "a923dc22-bab9-47b0-8427-ac28a41f84ed"
         },
         "dataSources": {
             "mainService": {
-                "uri": "odata/v4/workers/",
+                "uri": "odata/v4/stations/",
                 "type": "OData",
                 "settings": {
                     "annotations": [],
-                    "localUri": "localService/metadata.xml",
                     "odataVersion": "4.0"
                 }
             }
         },
         "crossNavigation": {
             "inbounds": {
-                "Task-Process": {
-                    "semanticObject": "Task",
-                    "action": "Process",
+                "station-View": {
+                    "semanticObject": "station",
+                    "action": "View",
                     "title": "{{flpTitle}}",
                     "signature": {
                         "parameters": {},
@@ -43,7 +42,7 @@
     "sap.ui": {
         "technology": "UI5",
         "icons": {
-            "icon": "sap-icon://SAP-icons-TNT/actor",
+            "icon": "sap-icon://addresses",
             "favIcon": "",
             "phone": "",
             "phone@2": "",
@@ -59,7 +58,7 @@
     "sap.ui5": {
         "flexEnabled": true,
         "dependencies": {
-            "minUI5Version": "1.120.3",
+            "minUI5Version": "1.120.4",
             "libs": {
                 "sap.m": {},
                 "sap.ui.core": {},
@@ -75,7 +74,7 @@
             "i18n": {
                 "type": "sap.ui.model.resource.ResourceModel",
                 "settings": {
-                    "bundleName": "taskslist.i18n.i18n"
+                    "bundleName": "bikestations.i18n.i18n"
                 }
             },
             "": {
@@ -100,49 +99,59 @@
             "routes": [
                 {
                     "pattern": ":?query:",
-                    "name": "RedistributionTasksList",
-                    "target": "RedistributionTasksList"
+                    "name": "StationsList",
+                    "target": "StationsList"
                 },
                 {
-                    "pattern": "RedistributionTasks({key}):?query:",
-                    "name": "RedistributionTasksObjectPage",
-                    "target": "RedistributionTasksObjectPage"
+                    "pattern": "Stations({key}):?query:",
+                    "name": "StationsObjectPage",
+                    "target": "StationsObjectPage"
                 }
             ],
             "targets": {
-                "RedistributionTasksList": {
+                "StationsList": {
                     "type": "Component",
-                    "id": "RedistributionTasksList",
+                    "id": "StationsList",
                     "name": "sap.fe.templates.ListReport",
                     "options": {
                         "settings": {
-                            "contextPath": "/RedistributionTasks",
+                            "contextPath": "/Stations",
                             "variantManagement": "Page",
-                            "hideFilterBar": true,
                             "navigation": {
-                                "RedistributionTasks": {
+                                "Stations": {
                                     "detail": {
-                                        "route": "RedistributionTasksObjectPage"
+                                        "route": "StationsObjectPage"
                                     }
                                 }
+                            },
+                            "views": {
+                                "paths": [
+                                    {
+                                        "primary": [
+                                            {
+                                                "annotationPath": "com.sap.vocabularies.UI.v1.Chart#alpChart"
+                                            }
+                                        ],
+                                        "secondary": [
+                                            {
+                                                "annotationPath": "com.sap.vocabularies.UI.v1.PresentationVariant"
+                                            }
+                                        ],
+                                        "defaultPath": "both"
+                                    }
+                                ]
                             }
                         }
                     }
                 },
-                "RedistributionTasksObjectPage": {
+                "StationsObjectPage": {
                     "type": "Component",
-                    "id": "RedistributionTasksObjectPage",
+                    "id": "StationsObjectPage",
                     "name": "sap.fe.templates.ObjectPage",
                     "options": {
                         "settings": {
                             "editableHeaderContent": false,
-                            "contextPath": "/RedistributionTasks",
-                            "sectionLayout": "Tabs",
-                            "content": {
-                                "header": {
-                                    "anchorBarVisible": false
-                                }
-                            }
+                            "contextPath": "/Stations"
                         }
                     }
                 }
