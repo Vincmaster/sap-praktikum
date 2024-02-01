@@ -9,7 +9,7 @@
 |**Service Type**<br>Local Cap|
 |**Service URL**<br>http://localhost:4004/odata/v4/dashboard/
 |**Module Name**<br>dashboard|
-|**Application Title**<br>Dashboard|
+|**Application Title**<br> Tasks Dashboard|
 |**Namespace**<br>|
 |**UI5 Theme**<br>sap_fiori_3_dark|
 |**UI5 Version**<br>1.120.4|
@@ -18,7 +18,7 @@
 |**Add Eslint configuration**<br>False|
 |**Main Entity**<br>RedistributionTask|
 
-## dashboard
+## Tasks Dashboard
 
 A Fiori application.
 

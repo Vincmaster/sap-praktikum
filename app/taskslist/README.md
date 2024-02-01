@@ -9,7 +9,7 @@
 |**Service Type**<br>Local Cap|
 |**Service URL**<br>http://localhost:4004/odata/v4/worker/
 |**Module Name**<br>taskslist|
-|**Application Title**<br>Tasklist|
+|**Application Title**<br>Workers App|
 |**Namespace**<br>|
 |**UI5 Theme**<br>sap_fiori_3_dark|
 |**UI5 Version**<br>1.120.3|
