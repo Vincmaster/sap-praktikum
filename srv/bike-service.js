@@ -157,12 +157,16 @@ class BikeService extends cds.ApplicationService {
             console.log("chosenWorker:", chosenWorker)
           }
 
+          // Create the description of the task
+          const description = `Move ${numOfBikesToRedistribute} bikes from ${nearestStation.location} to ${station.location}`
+
           // Step XX: Create a new redistribution task
           const redistributionTask = await INSERT.into(RedistributionTasks).entries({
             status_code: "OPEN",
             assignedWorker_ID: chosenWorker.ID,
+            description: description
           })
-          console.log("A new redistribution task with the following ID was created:", redistributionTask.results[0].values[2])
+          console.log("A new redistribution task with the following ID was created:", redistributionTask.results[0].values[3])
 
           // Step XX: Set redistributionActive to true to avoid having multiple tasks for the same station at the same time
           await UPDATE(Stations).set({ redistributionActive: true }).where({ ID: station.ID })
@@ -182,7 +186,7 @@ class BikeService extends cds.ApplicationService {
               bike_ID: bikeToRedistribute.ID,
               departure_ID: nearestStation.ID,
               target_ID: station.ID,
-              task_ID: redistributionTask.results[0].values[2],
+              task_ID: redistributionTask.results[0].values[3],
             })
             console.log("taskItem created:", taskItem.results[0].values)
 
