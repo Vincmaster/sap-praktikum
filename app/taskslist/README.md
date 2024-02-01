@@ -18,7 +18,7 @@
 |**Add Eslint configuration**<br>False|
 |**Main Entity**<br>RedistributionTasks|
 
-## taskslist
+## Workers App
 
 A Fiori application.
 
