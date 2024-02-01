@@ -1,6 +1,5 @@
 using {ibike.db as db} from '../db/schema';
 
-
 service BikeService {
 
     entity Bikes as projection on db.Bikes;
@@ -17,10 +16,6 @@ service BikeService {
 
     event bikeReturned : {
         bikeId : UUID
-    }
-
-    event statusChanged : {
-        bikeId: UUID
     }
 
 }

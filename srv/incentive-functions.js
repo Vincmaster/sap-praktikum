@@ -1,5 +1,4 @@
 const config = require('./config.json')
-//const config = require('./../config.json')
 
 async function updateRentIncentiveLevel(station, Stations) {
     console.log("*** Start of rent incentive logic (on station level) ***")
