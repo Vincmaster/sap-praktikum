@@ -30,7 +30,6 @@
         "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
         "watch-taskslist": "cds watch --open taskslist/webapp/index.html?sap-ui-xx-viewCache=false",
         "watch-dashboard": "cds watch --open dashboard/webapp/index.html?sap-ui-xx-viewCache=false",
-        "watch-stations": "cds watch --open stations/webapp/index.html?sap-ui-xx-viewCache=false",
         "watch-bikestations": "cds watch --open bikestations/webapp/index.html?sap-ui-xx-viewCache=false"
     },
     "cds": {
@@ -58,7 +57,6 @@
     "sapux": [
         "app/taskslist",
         "app/dashboard",
-        "app/stations",
         "app/bikestations"
     ]
 }

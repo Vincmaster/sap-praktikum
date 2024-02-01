@@ -48,10 +48,6 @@ modules:
       name: dashboard
       target-path: resources/
     - artifacts:
-      - stations.zip
-      name: stations
-      target-path: resources/
-    - artifacts:
       - bikestations.zip
       name: bikestations
       target-path: resources/
@@ -105,16 +101,6 @@ modules:
         existing_destinations_policy: ignore
   build-parameters:
     no-source: true
-- name: stations
-  type: html5
-  path: app/stations
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
 - name: bikestations
   type: html5
   path: app/bikestations
