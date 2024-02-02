@@ -67,6 +67,15 @@ annotate service.Stations with @(
     
 );
 
+annotate service.Stations with @(UI.HeaderInfo: {
+    Title         : {
+        $Type: 'UI.DataField',
+        Value: location,
+    },
+    TypeName      : 'Station',
+    TypeNamePlural: 'Stations',
+});
+
 annotate service.Stations with @(
     UI.FieldGroup #Station : {
         $Type : 'UI.FieldGroupType',
