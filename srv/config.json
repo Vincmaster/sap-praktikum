@@ -14,5 +14,9 @@
         "low": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
         "medium": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3",
         "high": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"
-    }
+    },
+    "redistrThresholdAbs": 5,
+    "redistrThresholdRel": 0.2,
+    "minBikesToRedistribute": 5,
+    "fillUpPercentage": 0.4
 }
