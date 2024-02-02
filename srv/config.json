@@ -18,5 +18,7 @@
     "redistrThresholdAbs": 5,
     "redistrThresholdRel": 0.2,
     "minBikesToRedistribute": 5,
-    "fillUpPercentage": 0.4
+    "fillUpPercentage": 0.4,
+    "demoWorker":"ge86zaw@mytum.de",
+    "_comment": "This is Janinas username."
 }

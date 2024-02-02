@@ -92,7 +92,7 @@ async function redistributeBikes(station, bikesAvailable, Stations, Bikes, Worke
     const demo = true
 
     if (demo) {
-        chosenWorker = allWorkers.find(worker => worker.name === "a.heckl@hotmail.de")
+        chosenWorker = allWorkers.find(worker => worker.name === config.demoWorker)
     }
     else {
         const busyWorkersIDs = await SELECT.from(RedistributionTasks)
