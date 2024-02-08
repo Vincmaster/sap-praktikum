@@ -24,9 +24,10 @@ class BikeService extends cds.ApplicationService {
 
       if (bike && station) {
         // Set status to "rented" and decrease bikesAvailable in this station by 1
-        await UPDATE(Bikes).set({ status: "rented" }).where({ ID: event.data.bikeID })
-        await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: event.data.stationID })
+        await UPDATE(Bikes).set({ status: "rented" }).where({ ID: bike.ID })
+        await UPDATE(Stations).set("bikesAvailable = bikesAvailable - 1").where({ ID: station.ID })
 
+        // Create a const for the new number of bikes available to simplify the below condition
         const bikesAvailable = station.bikesAvailable - 1
 
         // Redistribution is triggered when there are either <= 5 bikes in the station or <= 20% of the station's max capacity (values defined in configfile)
@@ -35,19 +36,19 @@ class BikeService extends cds.ApplicationService {
         // Additionally, there should only be 1 active redistribution task at a time for this station
         if (thresholdMet && !(station.redistributionActive)) {
           console.log("Redistribution logic was triggered ...")
-          await redistributeBikes(station, bikesAvailable, Stations, Bikes, Workers, RedistributionTasks, TaskItems)
+          await redistributeBikes(station.ID, Stations, Bikes, Workers, RedistributionTasks, TaskItems)
         } else {
           console.log("Redistribution logic was not triggered. The threshold was not met and/or there is already another active redistribution task for this station.")
         }
 
         // Update incentive to rent bikes from this station
-        await updateRentIncentiveLevel(station, Stations)
+        await updateRentIncentiveLevel(station.ID, Stations)
 
         // Update incentive to return bikes to this station
-        await updateReturnIncentiveLevel(station, Stations)
+        await updateReturnIncentiveLevel(station.ID, Stations)
 
         // Update incentives on bike level (incentive to rent bikes with less kilometers)
-        await updateBikeIncentiveLevels(station, Bikes)
+        await updateBikeIncentiveLevels(station.ID, Bikes)
 
       } else {
         if (!bike) {
@@ -86,20 +87,20 @@ class BikeService extends cds.ApplicationService {
 
         // Update status, current station and kilometers
         await UPDATE(Bikes)
-          .set({ status: "stationed", currentStation_ID: event.data.stationID, kilometers: newTotalKilometers })
-          .where({ ID: event.data.bikeID })
+          .set({ status: "stationed", currentStation_ID: station.ID, kilometers: newTotalKilometers })
+          .where({ ID: bike.ID })
 
         // Update bikes available
-        await UPDATE(Stations).set("bikesAvailable = bikesAvailable + 1").where({ ID: event.data.stationID })
+        await UPDATE(Stations).set("bikesAvailable = bikesAvailable + 1").where({ ID: station.ID })
 
         // Update incentive to rent bikes from this station
-        await updateRentIncentiveLevel(station, Stations)
+        await updateRentIncentiveLevel(station.ID, Stations)
 
         // Update incentive to return bikes to this station
-        await updateReturnIncentiveLevel(station, Stations)
+        await updateReturnIncentiveLevel(station.ID, Stations)
 
         // Update incentives on bike level (incentive to rent bikes with less kilometers)
-        await updateBikeIncentiveLevels(station, Bikes)
+        await updateBikeIncentiveLevels(station.ID, Bikes)
 
       } else {
         if (!bike) {

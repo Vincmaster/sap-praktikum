@@ -45,13 +45,13 @@ class WorkersService extends cds.ApplicationService {
         const targetStation = await SELECT.one.from(Stations).where({ ID: targetID })
         
         // Update incentive to rent bikes from this station
-        await updateRentIncentiveLevel(targetStation, Stations)
+        await updateRentIncentiveLevel(targetStation.ID, Stations)
 
         // Update incentive to return bikes to this station
-        await updateReturnIncentiveLevel(targetStation, Stations)
+        await updateReturnIncentiveLevel(targetStation.ID, Stations)
 
         // Update incentives on bike level (incentive to rent bikes with less kilometers)
-        await updateBikeIncentiveLevels(targetStation, Bikes)
+        await updateBikeIncentiveLevels(targetStation.ID, Bikes)
 
       } else {
         console.log("Invalid task status.")

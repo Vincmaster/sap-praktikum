@@ -1,15 +1,19 @@
 const config = require('./config.json')
 const { updateRentIncentiveLevel, updateReturnIncentiveLevel, updateBikeIncentiveLevels } = require('./incentive-functions.js')
 
-async function redistributeBikes(station, bikesAvailable, Stations, Bikes, Workers, RedistributionTasks, TaskItems) {
+async function redistributeBikes(stationID, Stations, Bikes, Workers, RedistributionTasks, TaskItems) {
     console.log("*** Start of redistribution logic ***")
 
-    /* First, it we need to determine how many bikes should be redistributed to this station.
+    // Get the station to which bikes should be transferred to
+    const station = await SELECT.one.from(Stations).where({ ID: stationID })
+    console.log("station:", station)
+
+    /* First, we need to determine how many bikes should be redistributed to this station.
        We decided to redistribute either 5 bikes or so many that the station gets "filled up" to 40% of its max capacity (whatever is higher).
        These values are defined in the configfile. */
 
     // Determine how many bikes are "missing" in the station to reach 40% of max capacity
-    const missingBikes = Math.ceil(station.maxCapacity * config.fillUpPercentage) - bikesAvailable
+    const missingBikes = Math.ceil(station.maxCapacity * config.fillUpPercentage) - station.bikesAvailable
 
     // Pick whatever of the two options is higher
     const numOfBikesToRedistribute = Math.max(config.minBikesToRedistribute, missingBikes)
@@ -168,13 +172,13 @@ async function redistributeBikes(station, bikesAvailable, Stations, Bikes, Worke
     // Thus, we need to update the 3 incentive types (rent inc. on station level, return inc. on station level and inc. on bike level) there.
 
     // Update incentive to rent bikes from there
-    await updateRentIncentiveLevel(nearestStation, Stations)
+    await updateRentIncentiveLevel(nearestStation.ID, Stations)
 
     // Update incentive to return bikes to this station
-    await updateReturnIncentiveLevel(nearestStation, Stations)
+    await updateReturnIncentiveLevel(nearestStation.ID, Stations)
 
     // Update incentives on bike level (incentive to rent bikes with less kilometers)
-    await updateBikeIncentiveLevels(nearestStation, Bikes)
+    await updateBikeIncentiveLevels(nearestStation.ID, Bikes)
 }
 
 

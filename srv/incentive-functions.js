@@ -1,6 +1,6 @@
 const config = require('./config.json')
 
-async function updateRentIncentiveLevel(station, Stations) {
+async function updateRentIncentiveLevel(stationID, Stations) {
     console.log("*** Start of rent incentive logic (on station level) ***")
     /*
     Overview of the rent incentive logic on station level:
@@ -15,6 +15,10 @@ async function updateRentIncentiveLevel(station, Stations) {
     4) between 90% and 100% of max capacity available --> incentive level "high"
     These thresholds are defined in the configfile at the top level of the repository.
      */
+
+    // Get the station for which the rent incentive level should be updated
+    const station = await SELECT.one.from(Stations).where({ ID: stationID })
+    console.log("station:", station)
 
     // Define constants for the respective thresholds as just described
     const thresholdLowPercentage = config.rentIncentiveThresholds.lowPercentage
@@ -38,13 +42,13 @@ async function updateRentIncentiveLevel(station, Stations) {
     let rentIncentiveLevelID = rentIncentiveLevelNoneID
     let rentIncentiveLevelName = "none" // This variable is just for logging purposes
 
-    if (station.bikesAvailable + 1 >= thresholdHigh) {
+    if (station.bikesAvailable >= thresholdHigh) {
         rentIncentiveLevelID = rentIncentiveLevelHighID
         rentIncentiveLevelName = "high"
-    } else if (station.bikesAvailable + 1 >= thresholdMedium) {
+    } else if (station.bikesAvailable >= thresholdMedium) {
         rentIncentiveLevelID = rentIncentiveLevelMediumID
         rentIncentiveLevelName = "medium"
-    } else if (station.bikesAvailable + 1 >= thresholdLow) {
+    } else if (station.bikesAvailable >= thresholdLow) {
         rentIncentiveLevelID = rentIncentiveLevelLowID
         rentIncentiveLevelName = "low"
     }
@@ -64,7 +68,7 @@ async function updateRentIncentiveLevel(station, Stations) {
 }
 
 
-async function updateReturnIncentiveLevel(station, Stations) {
+async function updateReturnIncentiveLevel(stationID, Stations) {
     console.log("*** Start of return incentive logic (on station level) ***")
     /*
     Overview of the return incentive logic on station level:
@@ -79,6 +83,10 @@ async function updateReturnIncentiveLevel(station, Stations) {
     4) between 10% and 0% of max capacity available --> incentive level "high"
     These thresholds are defined in the configfile at the top level of the repository.
      */
+
+    // Get the station for which the return incentive level should be updated
+    const station = await SELECT.one.from(Stations).where({ ID: stationID })
+    console.log("station:", station)
 
     // Define constants for the respective thresholds as just described
     const thresholdLowPercentage = config.returnIncentiveThresholds.lowPercentage
@@ -102,13 +110,13 @@ async function updateReturnIncentiveLevel(station, Stations) {
     let returnIncentiveLevelID = returnIncentiveLevelNoneID
     let returnIncentiveLevelName = "none" // This variable is just for logging purposes
 
-    if (station.bikesAvailable - 1 <= thresholdHigh) {
+    if (station.bikesAvailable <= thresholdHigh) {
         returnIncentiveLevelID = returnIncentiveLevelHighID
         returnIncentiveLevelName = "high"
-    } else if (station.bikesAvailable - 1 <= thresholdMedium) {
+    } else if (station.bikesAvailable <= thresholdMedium) {
         returnIncentiveLevelID = returnIncentiveLevelMediumID
         returnIncentiveLevelName = "medium"
-    } else if (station.bikesAvailable - 1 <= thresholdLow) {
+    } else if (station.bikesAvailable <= thresholdLow) {
         returnIncentiveLevelID = returnIncentiveLevelLowID
         returnIncentiveLevelName = "low"
     }
@@ -128,7 +136,7 @@ async function updateReturnIncentiveLevel(station, Stations) {
 }
 
 
-async function updateBikeIncentiveLevels(station, Bikes) {
+async function updateBikeIncentiveLevels(stationID, Bikes) {
     console.log("*** Start of incentive logic on bike level ***")
 
     /*
@@ -152,7 +160,7 @@ async function updateBikeIncentiveLevels(station, Bikes) {
 
     // Find all stationed bikes at the station where the customer returned the bike.
     // Note that we explicitely do not update the incentive levels for bikes which are rented or part of an ongoing redistribution task
-    const bikesInStation = await SELECT.from(Bikes).where({ currentStation_ID: station.ID, status: "stationed" })
+    const bikesInStation = await SELECT.from(Bikes).where({ currentStation_ID: stationID, status: "stationed" })
     console.log("bikesInStation:", bikesInStation)
 
     // Sort the bikes by kilometers in descending order
