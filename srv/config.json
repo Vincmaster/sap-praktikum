@@ -19,6 +19,6 @@
     "redistrThresholdRel": 0.2,
     "minBikesToRedistribute": 5,
     "fillUpPercentage": 0.4,
-    "demoWorker":"ge86zaw@mytum.de",
-    "_comment": "This is Janinas username."
+    "demoWorker":"a.heckl@hotmail.de",
+    "_comment": "This is Andis username. This user has both the Operations Manger and Worker role. Thus, course instructors can use it to test all the Fiori apps of the prototype."
 }
