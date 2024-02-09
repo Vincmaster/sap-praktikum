@@ -1,3 +1,9 @@
+/* Remark for the course instructors:
+This file contains exhaustive console logs to make it easier for the instructors to track what is going on in case something is unclear.
+The project team is aware that this is not a best practice in production code.
+Refer to the file srv/bike-service.json for advice on how to view the logs.
+*/
+
 const cds = require('@sap/cds')
 const { updateReturnIncentiveLevel, updateRentIncentiveLevel, updateBikeIncentiveLevels } = require('./incentive-functions.js')
 
@@ -45,13 +51,13 @@ class WorkersService extends cds.ApplicationService {
         const targetStation = await SELECT.one.from(Stations).where({ ID: targetID })
         
         // Update incentive to rent bikes from this station
-        await updateRentIncentiveLevel(targetStation, Stations)
+        await updateRentIncentiveLevel(targetStation.ID, Stations)
 
         // Update incentive to return bikes to this station
-        await updateReturnIncentiveLevel(targetStation, Stations)
+        await updateReturnIncentiveLevel(targetStation.ID, Stations)
 
         // Update incentives on bike level (incentive to rent bikes with less kilometers)
-        await updateBikeIncentiveLevels(targetStation, Bikes)
+        await updateBikeIncentiveLevels(targetStation.ID, Bikes)
 
       } else {
         console.log("Invalid task status.")
