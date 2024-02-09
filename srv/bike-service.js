@@ -1,5 +1,19 @@
+/* Remark for the course instructors:
+This file contains exhaustive console logs to make it easier for the instructors to track what is going on in case something is unclear.
+The project team is aware that this is not a best practice in production code.
+When an event has ocurred, the cloud foundry logs can be read by running the following commands
+in the terminal of the Business Application Studio:
+
+cf login --sso -a https://api.cf.eu20.hana.ondemand.com
+--> login to Cloud Foundry with this command (only needed once)
+
+cf logs ibike-srv --recent
+--> display recent logs in the terminal
+
+rerun the latter command whenever an event has occured to see the latest logs.
+*/
+
 const cds = require("@sap/cds")
-const log = cds.log("ibike")
 const config = require('./config.json')
 const { updateRentIncentiveLevel, updateReturnIncentiveLevel, updateBikeIncentiveLevels } = require('./incentive-functions.js')
 const { redistributeBikes } = require('./redistribution.js')

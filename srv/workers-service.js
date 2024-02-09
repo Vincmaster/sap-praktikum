@@ -1,3 +1,9 @@
+/* Remark for the course instructors:
+This file contains exhaustive console logs to make it easier for the instructors to track what is going on in case something is unclear.
+The project team is aware that this is not a best practice in production code.
+Refer to the file srv/bike-service.json for advice on how to view the logs.
+*/
+
 const cds = require('@sap/cds')
 const { updateReturnIncentiveLevel, updateRentIncentiveLevel, updateBikeIncentiveLevels } = require('./incentive-functions.js')
 
