@@ -20,5 +20,5 @@
     "minBikesToRedistribute": 5,
     "fillUpPercentage": 0.4,
     "demoWorker":"a.heckl@hotmail.de",
-    "_comment": "This is Andis username. This user has both the Operations Manger and Worker role. Thus, he can access all the Fiori apps of the prototype o test them."
+    "_comment": "This is Andis username. This user has both the Operations Manger and Worker role. Thus, he can access all 3 Fiori apps of the prototype to test them."
 }
