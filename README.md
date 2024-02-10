@@ -1,25 +1,26 @@
 # Getting Started
 
-Welcome to your new project.
+Welcome to the iBike Situation Handler project.
+For further details, please refer to the project documentation.
 
-It contains these folders and files, following our recommended project layout:
+This project contains these folders and files, following our recommended project layout:
 
 File or Folder | Purpose
 ---------|----------
-`app/` | content for UI frontends goes here
-`db/` | your domain models and data go here
-`srv/` | your service models and code go here
+`app/` | content of the three Fiori Apps
+`db/` | our domain models and data
+`srv/` | our service models and code
 `package.json` | project metadata and configuration
-`readme.md` | this getting started guide
 
+## Development
 
-## Next Steps
+- Open Business Application Studio (BAS)
+- Clone this repository
+- Run `npm install` in your BAS terminal
+- Run `cds watch` in your BAS terminal, the application will start locally and you can enter the apps via the provided link
 
-- Open a new terminal and run `cds watch` 
-- (in VS Code simply choose _**Terminal** > Run Task > cds watch_)
-- Start adding content, for example, a [db/schema.cds](db/schema.cds).
+## Testing
 
-
-## Learn More
-
-Learn more at https://cap.cloud.sap/docs/get-started/.
+- In the BTP Cockpit open the SAP Build Workzone
+- Open the iBike Website
+- The Fiori Launchpad with the three apps should now be displayed
